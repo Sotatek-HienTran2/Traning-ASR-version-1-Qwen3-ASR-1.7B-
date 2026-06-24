@@ -1,0 +1,14 @@
+ERROR: [youtube] dQw4w9WgXcQ: Requested format is not available. Use --list-formats for a list of available formats
+==========================================================================================
+  VPN AUDIO SPEED TEST
+==========================================================================================
+  Config dir:  /home/hientran/sythetic_crawl_data/proton_config
+  Total files: 62 (sau filter)
+  Test:        62 servers
+  Audio URL:   https://www.youtube.com/watch?v=dQw4w9WgXcQ
+  Output:      /home/hientran/sythetic_crawl_data/vpn_audio_speed_test_full
+  Country:     ALL
+  Limit:       env TEST_VPN_LIMIT (default 5)
+==========================================================================================
+
+  [  1/62] ❌ ca-free-14.protonvpn.udp.ovpn             IP=212.104.215.159   status=error  ERROR: [youtube] dQw4w9WgXcQ: Requested format is not availa

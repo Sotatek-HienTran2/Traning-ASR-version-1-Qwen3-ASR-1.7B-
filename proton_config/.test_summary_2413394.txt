@@ -1,0 +1,17 @@
+===================================================
+ProtonVPN Pool Test
+  Total to test: 1
+  Country filter: ALL
+  Started: Fri Jun 19 10:50:06 AM +07 2026
+  Output: /home/hientran/sythetic_crawl_data/proton_config/.test_result_2413394.log
+===================================================
+
+
+===================================================
+RESULT SUMMARY
+  GOOD:     0
+  BLOCKED:  0
+  FAIL:     1
+  Total:    1
+  Ended:    Fri Jun 19 10:51:10 AM +07 2026
+===================================================
