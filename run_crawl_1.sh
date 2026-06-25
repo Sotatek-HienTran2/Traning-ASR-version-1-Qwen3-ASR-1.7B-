@@ -3,10 +3,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PY=/home/hientran/miniconda3/envs/crawl/bin/python3
-CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_khoa_hoc_5.txt
+CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_lich_su_1.txt
 MAX_RESULTS=5000
 MAX_FETCH=50000
-VIDEO_DELAY=1
+VIDEO_DELAY=5
 
 # =============================================================================
 # kill_vpn_fake_ips()

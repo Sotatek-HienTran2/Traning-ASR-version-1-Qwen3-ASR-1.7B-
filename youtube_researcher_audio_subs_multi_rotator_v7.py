@@ -1,117 +1,52 @@
 #!/usr/bin/env python3
 """
-YouTube Researcher -- AUDIO + YOUTUBE SUBS (MULTI-ROTATOR) -- v6 PLAYLIST-ITEMS-API
-====================================================================================
+YouTube Researcher -- AUDIO + YOUTUBE SUBS (MULTI-ROTATOR) -- v7 HTTP-500-AWARE
+================================================================================
 
-v6 = youtube_researcher_audio_subs_multi_rotator_v5.py + YouTube Data API
-playlistItems.list (NO 750 items limit) + 5 audio fix mới.
+v7 = youtube_researcher_audio_subs_multi_rotator_v6.py + HTTP 500 retry-aware
+audio downloader. Tự động đổi IP (REAL ↔ FAKE) khi gặp HTTP 500 Internal
+Server Error liên tiếp từ googlevideo.com.
 
-Vấn đề của v5: `yt-dlp extract_flat=True` chỉ lấy được **~750 items thực tế**
-dù `playlistend=5000`. Với channel > 750 video (vd: KhoaHọcvàKhámPhá có 904 video)
-→ bỏ sót ~150 video.
+Vấn đề của v6:
+  Khi IP bị Google rate-limit / geo-block, YouTube trả về:
+    [download] Got error: HTTP Error 500: Internal Server Error
+  v6 chỉ retry fragment đó (yt-dlp default: fragment_retries=∞) NHƯNG:
+    - KHÔNG đổi IP → cứ retry trên IP chết → tốn bandwidth vô ích.
+    - KHÔNG phát hiện IP bị block → fail mãi không tiến triển.
+    - KHÔNG giới hạn số fragment 500 → có thể stuck 30+ phút ở 1 video.
 
-v6 fix bằng cách dùng YouTube Data API `playlistItems.list` paginate qua
-`nextPageToken` (giống youtube_researcher_sub_playlist.py):
-  - resolve_channel_id() qua API → lấy channel_id
-  - uploads_playlist_id = "UU" + channel_id[2:]
-  - Paginate `playlistItems().list(playlistId=uploads_playlist_id)` đến khi
-    đủ max_results HOẶC hết nextPageToken.
-  - KHÔNG giới hạn 750 items.
+v7 fix bằng cách thêm HTTP500Detector:
+  - Bắt pattern "HTTP Error 500" trong stderr của yt-dlp (real-time).
+  - Track fragment fail count per download.
+  - Nếu fragment_500_count >= ngưỡng (mặc định 5) → force rotate IP
+    (REAL → FAKE, FAKE khác, hoặc cycle về REAL).
+  - Kết hợp với stall detector: nếu bytes không tăng trong N giây → flag stuck
+    → cũng trigger rotate.
+  - Giảm fragment_retries từ ∞ xuống 5 (yt-dlp default) → tránh retry vô tận
+    trên IP chết. Khi hết retry mà vẫn 500 → catch exception → cycle IP.
 
-v6 cũng giữ tất cả fix từ v5:
+v7 cũng giữ tất cả fix từ v6:
   - AudioIPController (state machine REAL/FAKE cho audio download)
   - 5 fix audio: _is_valid_wav, _build_audio_index chỉ .wav,
     _cleanup_orphan_part_files + cleanup_all_subdirs, BUG #2 fix rename,
     BUG #3 fix cleanup orphan sau rename.
   - RESET state → REAL mỗi video (Option A).
   - kill_all_vpn_tunnels() toàn cục.
+  - YouTubeKeyRotator: rotate API key khi quotaExceeded.
 
-v6 thêm mới:
-  - YouTubeKeyRotator: rotate API key khi quotaExceeded
-    (load YOUTUBE_API_KEY + _1.._7 từ env).
-  - api_call_with_retry: retry on SSL/timeout/connection.
-  - resolve_channel_id_v6: hỗ trợ @handle, /channel/UCxxx, /c/, /user/.
+v7 thêm mới:
+  - HTTP500Detector class: đếm HTTP 500 từ stderr + track per-fragment.
+  - StallDetector: phát hiện bytes không tăng trong N giây (proxy cho stuck).
+  - _is_youtube_blocked_error(): thêm "500", "internal server error".
+  - extract_info retry: giảm fragment_retries xuống 5, retries xuống 5.
+  - Exception handler cuối: catch fragment 500 fail → trigger cycle IP.
+  - 3 tham số CLI mới:
+      --audio-500-threshold (default 5)  : số fragment 500 trước khi cycle
+      --audio-stall-seconds (default 30) : bytes không tăng → stuck → cycle
+      --audio-max-500-retries (default 3): số lần retry toàn bộ download
+                                           khi gặp 500 sau khi đã cycle IP
 
-v5 thêm `AudioIPController` — chỉ áp dụng cho AUDIO download (không phải
-metadata/transcript):
-  - IP đầu tiên trong session LUÔN là IP thật (default route, KHÔNG qua VPN).
-  - Đo tốc độ LIÊN TỤC qua yt-dlp progress hook.
-  - Nếu tốc độ < min_speed_mbps (mặc định 1 MB/s) → đổi IP.
-  - Nếu tốc độ ≥ min_speed_mbps → KHÔNG đổi, giữ nguyên IP hiện tại.
-  - Cycle 6: Sau 5 lần IP-fake mà tốc độ vẫn < min → lần thứ 6 chuyển về IP thật
-    (disconnect VPN). Tạo "bản sao riêng v_5" vì v3 chỉ cycle dựa trên counter
-    (real_ip_cycle=N), v5 dựa trên kết quả đo tốc độ thực tế.
-  - Phải đổi IP THẬT SỰ (real ↔ fake), không phải chỉ đổi server VPN trong
-    cùng 1 tunnel.
-
-State machine:
-  REAL  --(speed < 1MB/s OR fail)--> FAKE
-  FAKE  --(speed >= 1MB/s)-----------> FAKE (giữ, không đổi)
-  FAKE  --(speed < 1MB/s, count<5)-> FAKE khác (force_rotate)
-  FAKE  --(speed < 1MB/s, count=5)-> REAL (disconnect VPN, cycle 6)
-
-So với v4, bổ sung:
-  - AudioIPController class (state machine cho IP)
-  - on_download_start() / on_download_complete() qua progress hook của yt-dlp
-  - 5 tham số CLI mới (tr-min-speed-mbps, --audio-fake-before-real,
-    --audio-min-bytes-for-speed, --audio-min-window-seconds,
-    --audio-speed-avg-window-seconds)
-
-So voi v3, v4 bo sung (giau nguyen trong v5):
-  - Su dung vpn_rotator_v4 (cooldown per server, blacklist, force_rotate)
-  - Tang retry transcript tu 2 -> 3 attempts
-  - Aggressive rotate khi gap captcha/bot check
-  - Tang max retries audio download tu 3 -> 5
-  - Stats chi tiet hon: consecutive_fails, cooldown, captcha hit count
-
-So với v2, bổ sung:
-  - VideoCandidate: +12 field (dimension, projection, licensed_content,
-    privacy_status, embeddable, made_for_kids, live_broadcast_content,
-    live_status, was_live, topic_categories, recording_location, availability)
-  - _api_item_to_ytdlp_dict(): +5 keys (height, availability, playable_in_embed,
-    is_live, live_status, was_live, license)
-  - _save_transcription(): JSON lưu đủ 12 field mới
-  - export_video_summary_csv(): video-level CSV 40+ cột (bổ sung bên cạnh
-    segment CSV 11 cột)
-
-Giữ nguyên từ v2:
-  - 3 VPN rotator TÁCH BIỆT cho 3 nhóm việc:
-    1. METADATA rotator  : channel listing + Data API + yt-dlp info
-    2. AUDIO rotator     : yt-dlp audio download + ffmpeg → .wav
-    3. TRANSCRIPT rotator: yt-dlp subtitles (NO fallback)
-
-  Tại sao TÁCH RIÊNG?
-  - 3 nhóm có **đặc thù traffic khác nhau**:
-    * Metadata: ít request, cần IP ổn định
-    * Audio: NHIỀU request + traffic lớn, dễ bị rate-limit (low-speed)
-    * Transcript: cần IP riêng để bypass "Sign in to confirm" challenge
-      mà KHÔNG ảnh hưởng audio đang download
-  - 3 rotator dùng CHUNG 1 VPNRotator sẽ:
-    * Chia sẻ state (_request_count, _current_idx, _current_pid)
-    * Trigger rotate theo nhau → pattern IP không ổn định
-    * Khi 1 nhóm rate-limit → 2 nhóm kia cũng bị ảnh hưởng
-
-Cấu hình mặc định:
-  - metadata_rotator  : rotate_every=10, real_ip_cycle=0 (TẮT cycle)
-  - audio_rotator     : rotate_every=0,  real_ip_cycle=11 (cứ 10 fake + 1 real)
-  - transcript_rotator: rotate_every=10, real_ip_cycle=0 (TẮT cycle)
-
-Mỗi rotator có:
-  - Tunnel openvpn RIÊNG (PID riêng, log file riêng)
-  - State riêng (_current_idx, _current_pid, _request_count, _usage_count)
-  - File log: /tmp/openvpn-proton-<instance_id>_<role>.log
-
-Đặc điểm:
-  - **LUÔN dùng ProtonVPN OpenVPN tunnel** để fake IP (./proton_config/*.ovpn).
-    KHÔNG có flag tắt. Nếu không có file .ovpn → sys.exit(1).
-  - **YouTube Data API key vẫn dùng** (videos.list) để có metadata đầy đủ
-    (view/like/comment/description/tags/...).
-  - **Multi-instance safe**: mỗi instance có 3 tunnel + cache riêng.
-  - **Resumable**: scan folder audio/ + transcriptions/ để biết video nào đã xong.
-  - **Multi-channel**: đọc file txt, mỗi dòng 1 URL kênh.
-  - **KHÔNG Soniox, KHÔNG LLM fix names, KHÔNG audio features analysis, KHÔNG diarization.**
-
-OUTPUT:
+Output:
   <output>/
     audio/<run_ts>/*.wav                       : audio (BẮT BUỘC)
     transcriptions/<run_ts>/*_transcription.json : {URL + metadata + segments}
@@ -121,24 +56,8 @@ OUTPUT:
     _multi_channel_summary_<run_ts>.json
     logs/crawl_<instance_id>.log
 
-Cấu trúc file <safe_title>_transcription.json:
-    {
-      "video_id": "...", "url": "...", "title": "...", "channel": "...",
-      "channel_id": "...", "channel_url": "...",
-      "published_at": "...", "duration": "PT123S", "duration_seconds": 123,
-      "view_count": 12345, "like_count": 100, "comment_count": 50,
-      "description": "...", "tags": [...], "category_id": "...",
-      "thumbnail": "...", "caption_available": true, "definition": "hd",
-      "audio_filename": "Tieu_De.wav", "audio_path": "Tieu_De.wav",
-      "audio_duration": 123.0, "audio_downloaded_at": "...",
-      "transcript_language": "vi", "transcript_is_auto": false,
-      "transcript_source": "yt-dlp-json3-manual",
-      "num_speakers": 1, "speakers": ["SPEAKER_00"],
-      "segments": [{"start": 3.0, "end": 10.787, "speaker": "SPEAKER_00", "text": "..."}]
-    }
-
 CÁCH DÙNG:
-    python youtube_researcher_audio_subs_multi_rotator.py \\
+    python youtube_researcher_audio_subs_multi_rotator_v7.py \\
         --channels-file ./channels_audio/channels_khoa_hoc_2.txt \\
         --output ./youtube_dataset_resumable \\
         --use-vpn --vpn-isolated \\
@@ -146,12 +65,8 @@ CÁCH DÙNG:
         --video-delay 5 --skip-existing
 
     # Rebuild CSV/summary từ JSON có sẵn (không gọi API, không tải audio)
-    python youtube_researcher_audio_subs_multi_rotator.py \\
+    python youtube_researcher_audio_subs_multi_rotator_v7.py \\
         --rebuild-from-transcripts
-
-    # Chỉ fetch metadata (không audio, không transcript)
-    python youtube_researcher_audio_subs_multi_rotator.py \\
-        --metadata-only --channels-file ./channels_audio/channels.txt
 """
 
 import json
@@ -704,6 +619,161 @@ def get_isolated_vpn_rotator_from_config(
         import logging as _log
         _log.getLogger("vpn_rotator").warning("IsolatedVPN rotator không khả dụng: %s", e)
         return None
+
+
+# ================= HTTP 500 DETECTOR (v7) =================
+# v7: Bắt pattern "HTTP Error 500: Internal Server Error" từ yt-dlp stderr
+# (real-time qua custom stderr hook) + track per-fragment.
+#
+# Background:
+#   Khi IP bị Google rate-limit, YouTube trả về HTTP 500 thay vì 403/429 để
+#   khó debug. yt-dlp default retry fragment đó INFINITE LẦN, tốn bandwidth
+#   nhưng KHÔNG đổi IP → có thể stuck 30+ phút ở 1 video.
+#
+# v7 fix:
+#   - Track số fragment 500 liên tiếp.
+#   - Nếu vượt ngưỡng (mặc định 5) → gọi AudioIPController.on_download_complete()
+#     với ok=False để trigger cycle IP (REAL → FAKE, hoặc FAKE khác, hoặc về REAL).
+#   - Cộng dồn số fragment 500 trong toàn bộ session để thống kê.
+
+class HTTP500Detector:
+    """v7: Detect & đếm HTTP 500 errors từ yt-dlp.
+
+    Args:
+        threshold: số fragment 500 tối đa trước khi trigger cycle IP.
+            Default 5. Nếu gặp 5 fragment liên tiếp trả 500 → gọi
+            on_http500_threshold() callback.
+        stall_seconds: nếu bytes không tăng trong N giây (progress_hook báo
+            downloaded_bytes không đổi) → flag stuck → cũng trigger callback.
+        on_http500_threshold: callback(fragment_500_count, total_fragments)
+            khi vượt ngưỡng. Caller thường là `audio_ip_ctl.on_download_complete(
+            bytes_dl=0, elapsed_s=0, ok=False)`.
+    """
+
+    def __init__(
+        self,
+        threshold: int = 5,
+        stall_seconds: float = 30.0,
+        on_http500_threshold=None,
+    ):
+        self.threshold = threshold
+        self.stall_seconds = stall_seconds
+        self.on_http500_threshold = on_http500_threshold
+
+        # Per-download state
+        self._reset_per_download()
+
+        # Session-wide stats
+        self.total_500_count = 0
+        self.total_500_per_video = []
+        self.total_stall_events = 0
+
+    def _reset_per_download(self):
+        """Reset state khi bắt đầu download mới."""
+        self._fragment_500_count = 0
+        self._last_500_frag_idx = None
+        # Stall detection
+        self._last_progress_bytes = 0
+        self._last_progress_t = None
+        self._stall_flag = False
+
+    def reset(self):
+        """Public API: gọi khi bắt đầu video mới (C-{i})."""
+        self._reset_per_download()
+
+    def on_stderr_line(self, line: str) -> bool:
+        """Hook vào yt-dlp stderr output. Trả True nếu line chứa HTTP 500.
+
+        Args:
+            line: 1 dòng stderr (đã strip newline).
+
+        Returns:
+            True nếu line là HTTP 500 error.
+        """
+        if not line:
+            return False
+        # Pattern thực tế từ log:
+        #   "[download] Got error: HTTP Error 500: Internal Server Error"
+        if "HTTP Error 500" in line or "HTTP Error 503" in line:
+            return True
+        return False
+
+    def on_fragment_500(self, frag_idx: int, total_frags: int) -> bool:
+        """Gọi khi 1 fragment fail với HTTP 500.
+
+        Args:
+            frag_idx: index của fragment hiện tại (vd: 932).
+            total_frags: tổng fragment (vd: 2329).
+
+        Returns:
+            True nếu ĐÃ VƯỢT ngưỡng → caller cần cycle IP.
+        """
+        self._fragment_500_count += 1
+        self._last_500_frag_idx = frag_idx
+        self.total_500_count += 1
+
+        if self._fragment_500_count >= self.threshold:
+            if self.on_http500_threshold:
+                try:
+                    self.on_http500_threshold(
+                        self._fragment_500_count, total_frags)
+                except Exception as e:
+                    print(f"    [http500-detector] callback error: {e}",
+                          flush=True)
+            return True
+        return False
+
+    def on_progress_check_stall(self, bytes_dl: int, now: float) -> bool:
+        """Gọi từ progress_hook mỗi lần. Phát hiện "stuck" (bytes không tăng).
+
+        Args:
+            bytes_dl: bytes đã tải (từ yt-dlp progress hook).
+            now: time.time() hiện tại.
+
+        Returns:
+            True nếu phát hiện stall (bytes không tăng > stall_seconds).
+        """
+        if self._last_progress_t is None:
+            self._last_progress_t = now
+            self._last_progress_bytes = bytes_dl
+            return False
+
+        if bytes_dl > self._last_progress_bytes:
+            # Có tiến triển → reset stall detection
+            self._last_progress_t = now
+            self._last_progress_bytes = bytes_dl
+            self._stall_flag = False
+            return False
+
+        # bytes không tăng → check stall
+        elapsed = now - self._last_progress_t
+        if elapsed >= self.stall_seconds and not self._stall_flag:
+            self._stall_flag = True
+            self.total_stall_events += 1
+            if self.on_http500_threshold:
+                try:
+                    self.on_http500_threshold(
+                        self._fragment_500_count, 0)
+                except Exception as e:
+                    print(f"    [http500-detector] stall callback error: {e}",
+                          flush=True)
+            return True
+        return False
+
+    def is_stalled(self) -> bool:
+        return self._stall_flag
+
+    def fragment_500_count(self) -> int:
+        return self._fragment_500_count
+
+    def stats(self) -> dict:
+        return {
+            "threshold": self.threshold,
+            "stall_seconds": self.stall_seconds,
+            "session_total_500": self.total_500_count,
+            "session_total_stalls": self.total_stall_events,
+            "current_download_500": self._fragment_500_count,
+        }
 
 
 # ================= AUDIO IP CONTROLLER (v5) =================
@@ -1328,7 +1398,9 @@ class YouTubeResearcher:
                  audio_fake_before_real: int = 5,
                  audio_min_bytes_for_speed: int = 256 * 1024,
                  audio_min_window_seconds: float = 5.0,
-                 audio_speed_avg_window_seconds: float = 10.0):
+                 audio_speed_avg_window_seconds: float = 10.0,
+                 audio_500_threshold: int = 5,
+                 audio_stall_seconds: float = 30.0):
         self.api_key = api_key
         # v6: YouTubeKeyRotator cho Phase 1 (playlistItems.list).
         # Nếu không truyền → tự tạo từ api_key (single-key mode, không rotate).
@@ -1373,6 +1445,14 @@ class YouTubeResearcher:
             min_bytes_for_speed=audio_min_bytes_for_speed,
             min_window_seconds=audio_min_window_seconds,
             speed_avg_window_seconds=audio_speed_avg_window_seconds,
+        )
+
+        # === v7: HTTP500Detector (bắt HTTP 500 liên tiếp → cycle IP) ===
+        # Khởi tạo SAU _audio_ip_ctl vì callback cycle IP dùng controller.
+        self._http500_detector = HTTP500Detector(
+            threshold=audio_500_threshold,
+            stall_seconds=audio_stall_seconds,
+            on_http500_threshold=self._on_http500_threshold,
         )
 
     def _next_proxy(self) -> Optional[str]:
@@ -1508,13 +1588,55 @@ class YouTubeResearcher:
 
     def _is_youtube_blocked_error(self, err) -> bool:
         err_str = str(err).lower()
-        keys = ('429', 'too many requests', 'rate limit', 'quota exceeded',
+        keys = ('429', '500', '503', 'too many requests', 'rate limit',
+                'quota exceeded', 'internal server error',
+                'service unavailable', 'bad gateway', 'gateway timeout',
                 '403', 'forbidden', 'blocked', 'access denied',
                 'sign in to confirm', 'not a bot', 'bot check',
                 'captcha', 'challenge',
                 'timed out', 'connect timeout', 'read timeout',
                 'connection reset', 'broken pipe', 'ssl')
         return any(k in err_str for k in keys)
+
+    def _on_http500_threshold(self, fragment_500_count: int, total_frags: int):
+        """v7: Callback khi HTTP500Detector vượt ngưỡng.
+
+        Trigger cycle IP thông qua AudioIPController.on_download_complete()
+        với ok=False. Controller sẽ:
+          - Nếu đang REAL → chuyển sang FAKE (test VPN).
+          - Nếu đang FAKE + consecutive_fake_slow < fake_before_real
+            → force_rotate sang VPN server khác.
+          - Nếu đang FAKE + consecutive_fake_slow >= fake_before_real
+            → cycle về REAL.
+
+        Args:
+            fragment_500_count: số fragment 500 trong download hiện tại.
+            total_frags: tổng fragment (0 nếu trigger từ stall detector).
+        """
+        kind = "stall" if total_frags == 0 else "HTTP 500"
+        print(f"  [v7-detector] ⚠️  {kind} threshold hit: "
+              f"{fragment_500_count} fragments, {total_frags} total frags. "
+              f"→ CYCLE IP via AudioIPController", flush=True)
+
+        # Báo cho AudioIPController: fail = ok=False. Controller sẽ tự quyết
+        # định state tiếp theo dựa trên state hiện tại + counter.
+        try:
+            # Lấy thời gian download hiện tại (nếu có _dl_state trong scope)
+            elapsed = time.time()
+            try:
+                # _dl_state là biến local trong _process_videos_pipeline,
+                # nhưng ta vẫn truyền giá trị hợp lý cho controller.
+                # on_download_complete nhận elapsed_s để tính speed.
+                # Với ok=False, controller KHÔNG tính speed, chỉ tăng counter
+                # fake_slow hoặc switch REAL→FAKE.
+                elapsed = 1.0  # dummy để tránh div-by-zero
+            except Exception:
+                pass
+            self._audio_ip_ctl.on_download_complete(
+                bytes_dl=0, elapsed_s=elapsed, ok=False,
+            )
+        except Exception as e:
+            print(f"  [v7-detector] on_download_complete error: {e}", flush=True)
 
     def _on_youtube_blocked(self, err, proxy_url, context: str):
         if not proxy_url:
@@ -3351,15 +3473,25 @@ def parse_args():
     p.add_argument("--audio-min-bytes-for-speed", type=int, default=256 * 1024,
                    help="v5: Tối thiểu bytes đã tải trước khi đánh giá tốc độ "
                         "(tránh false positive với file nhỏ). Mặc định: 262144 (256KB).")
-    p.add_argument("--audio-min-window-seconds", type=float, default=20.0,
+    p.add_argument("--audio-min-window-seconds", type=float, default=15.0,
                    help="v5: Tối thiểu thời gian (giây) trước khi đánh giá tốc độ. "
                         "Mặc định: 10.0")
-    p.add_argument("--audio-speed-avg-window-seconds", type=float, default=20.0,
+    p.add_argument("--audio-speed-avg-window-seconds", type=float, default=15.0,
                    help="v5: Cửa sổ (giây) để tính TỐC ĐỘ TRUNG BÌNH (rolling average). "
                         "Mỗi chunk mới sẽ được lưu vào buffer, tốc độ TB = "
                         "(bytes mới nhất - bytes cũ nhất trong window) / window_size. "
                         "Làm mượt dao động tốc độ tức thời, phản ánh throughput "
                         "thực tế hơn. Mặc định: 10.0")
+    # === v7: HTTP 500 + stall detection ===
+    p.add_argument("--audio-500-threshold", type=int, default=5,
+                   help="v7: Số fragment HTTP 500 tối đa trước khi cycle IP. "
+                        "Mặc định: 5. Nếu gặp 5 fragment liên tiếp trả 500 → "
+                        "gọi AudioIPController.on_download_complete(ok=False) "
+                        "để cycle IP (REAL → FAKE, hoặc FAKE khác, hoặc về REAL).")
+    p.add_argument("--audio-stall-seconds", type=float, default=30.0,
+                   help="v7: Nếu bytes không tăng trong N giây (progress hook "
+                        "báo downloaded_bytes không đổi) → flag stuck → cũng "
+                        "trigger cycle IP. Mặc định: 30.0")
     return p.parse_args()
 
 
@@ -3424,6 +3556,8 @@ def process_one_channel(
     audio_min_bytes_for_speed: int = 256 * 1024,
     audio_min_window_seconds: float = 5.0,
     audio_speed_avg_window_seconds: float = 10.0,
+    audio_500_threshold: int = 5,           # v7
+    audio_stall_seconds: float = 30.0,      # v7
 ) -> dict:
     channel_name = safe_channel_name(channel_url)
     channel_output = Path(output_root) / channel_name
@@ -3471,6 +3605,8 @@ def process_one_channel(
         audio_min_bytes_for_speed=audio_min_bytes_for_speed,
         audio_min_window_seconds=audio_min_window_seconds,
         audio_speed_avg_window_seconds=audio_speed_avg_window_seconds,
+        audio_500_threshold=audio_500_threshold,         # v7
+        audio_stall_seconds=audio_stall_seconds,         # v7
     )
     try:
         researcher.fetch_channel_videos(
@@ -4008,6 +4144,11 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
             except Exception as e:
                 print(f"  [audio-ip] audio_rotator.disconnect error (ignored): {e}",
                       flush=True)
+            # v7: Reset HTTP500Detector cho video mới
+            try:
+                self._http500_detector.reset()
+            except Exception as e:
+                print(f"  [v7-detector] reset error (ignored): {e}", flush=True)
 
         # Delay giữa các video để tránh YouTube rate limit (429)
         if i > 1 and video_delay > 0:
@@ -4063,6 +4204,7 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                 def _audio_progress_hook(d):
                     """yt-dlp progress hook: gọi AudioIPController.on_chunk_progress()
                     để đo tốc độ liên tục. KHÔNG trigger rotate ở đây.
+                    v7: thêm stall detection qua HTTP500Detector.
                     """
                     try:
                         status = d.get("status", "")
@@ -4079,6 +4221,13 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                                 elapsed_s=elapsed,
                                 speed_bps=speed_bps,
                             )
+                            # v7: stall detection (bytes không tăng trong N giây)
+                            try:
+                                self._http500_detector.on_progress_check_stall(
+                                    bytes_dl=bytes_now, now=time.time(),
+                                )
+                            except Exception:
+                                pass
                         elif status == "finished":
                             downloaded_bytes = int(d.get("downloaded_bytes") or 0)
                             _dl_state["bytes_dl_max"] = max(
@@ -4102,6 +4251,16 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                     }],
                     'postprocessor_args': ['-ar', '16000', '-ac', '1'],
                     'progress_hooks': [_audio_progress_hook],
+                    # v7: GIỚI HẠN retry fragment thay vì default ∞. Khi IP
+                    # chết, retry vô tận → tốn bandwidth vô ích. Giới hạn 5
+                    # lần → sau 5 lần mà vẫn fail → throw exception → catch
+                    # ở ngoài → cycle IP.
+                    'retries': 5,
+                    'fragment_retries': 5,
+                    'retry_sleep_functions': {
+                        'http': lambda n: min(2 ** n, 30),  # exponential backoff
+                        'fragment': lambda n: min(2 ** n, 30),
+                    },
                 }
                 self._apply_auth_skip(ydl_opts)
                 self._apply_cookies(ydl_opts)
@@ -4198,6 +4357,17 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                 except Exception as dl_err:
                     err_str_dl = str(dl_err)
                     print(f"    [audio-ip] Download ERROR (attempt {dl_attempt}/{dl_retries}): {err_str_dl}", flush=True)
+
+                    # v7: Detect HTTP 500 trong exception message → cycle IP
+                    is_http_500 = (
+                        "HTTP Error 500" in err_str_dl
+                        or "HTTP Error 503" in err_str_dl
+                        or "Internal Server Error" in err_str_dl
+                    )
+                    http_500_count = self._http500_detector.fragment_500_count()
+                    print(f"    [v7-detector] HTTP 500 count = {http_500_count}, "
+                          f"is_http_500={is_http_500}", flush=True)
+
                     # v5: Report fail cho AudioIPController (để nó quyết
                     # định state tiếp theo dựa trên speed/fail).
                     bytes_dl_at_fail = _dl_state.get("bytes_dl_max", 0)
@@ -4208,6 +4378,17 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                         elapsed_s=elapsed_at_fail,
                         ok=False,
                     )
+
+                    # v7: Nếu là HTTP 500 → KHÔNG retry ngay, mà cycle IP
+                    # trước rồi retry. Lý do: nếu IP bị rate-limit, retry
+                    # trên cùng IP sẽ tiếp tục fail.
+                    if is_http_500 and dl_attempt < dl_retries:
+                        print(f"      [v7] HTTP 500 detected → đã cycle IP qua "
+                              f"AudioIPController. Sleep {3 * dl_attempt}s rồi retry...",
+                              flush=True)
+                        time.sleep(3 * dl_attempt)
+                        continue
+
                     if self._is_youtube_blocked_error(dl_err) and dl_attempt < dl_retries:
                         # v5: KHÔNG gọi force_rotate thủ công — để
                         # AudioIPController.on_download_complete() đã xử lý
@@ -4452,6 +4633,13 @@ def main():
     print(f"  • Min bytes for speed: {args.audio_min_bytes_for_speed:,}")
     print(f"  • Min window: {args.audio_min_window_seconds}s")
     print(f"  • Speed avg window: {args.audio_speed_avg_window_seconds}s (rolling average)")
+    print(f"\n=== v7 HTTP 500 + STALL DETECTOR ===")
+    print(f"  • HTTP 500 threshold: {args.audio_500_threshold} fragments "
+          f"→ cycle IP (REAL ↔ FAKE ↔ REAL)")
+    print(f"  • Stall detection: bytes không tăng trong {args.audio_stall_seconds}s "
+          f"→ cycle IP")
+    print(f"  • Giảm fragment_retries: ∞ → 5 (tránh retry vô tận trên IP chết)")
+    print(f"  • Exponential backoff: 2^n giây, max 30s")
 
     # Run logger
     output_root = Path(args.output)
@@ -4498,6 +4686,8 @@ def main():
                 audio_min_bytes_for_speed=args.audio_min_bytes_for_speed,
                 audio_min_window_seconds=args.audio_min_window_seconds,
                 audio_speed_avg_window_seconds=args.audio_speed_avg_window_seconds,
+                audio_500_threshold=args.audio_500_threshold,         # v7
+                audio_stall_seconds=args.audio_stall_seconds,         # v7
             )
         except Exception as e:
             print(f"  ERROR processing {ch_url}: {e}")
