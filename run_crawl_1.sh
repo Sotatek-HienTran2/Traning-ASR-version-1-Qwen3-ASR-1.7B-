@@ -3,10 +3,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PY=/home/hientran/miniconda3/envs/crawl/bin/python3
-CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_lich_su_1.txt
-MAX_RESULTS=5000
-MAX_FETCH=50000
-VIDEO_DELAY=5
+CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_khoa_hoc_4.txt
+MAX_RESULTS=500
+MAX_FETCH=3000
+VIDEO_DELAY=8
 
 # =============================================================================
 # kill_vpn_fake_ips()
@@ -172,7 +172,7 @@ echo "[run_crawl] starting crawler..."
 cd "$SCRIPT_DIR"
 
 exec "$PY" \
-  "$SCRIPT_DIR/youtube_researcher_audio_subs_multi_rotator_v6.py" \
+  "$SCRIPT_DIR/youtube_researcher_audio_subs_multi_rotator_v7.py" \
   --channels-file "$CHANNELS_FILE" \
   --max-results "$MAX_RESULTS" \
   --max-fetch "$MAX_FETCH" \
