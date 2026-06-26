@@ -3,3 +3,4 @@ server=jp-free-3.protonvpn.udp.ovpn, ip=117.4.246.88
 server=sg-free-5.protonvpn.udp.ovpn, ip=149.88.23.104
 server=us-free-53.protonvpn.udp.ovpn, ip=146.70.174.67
 server=ca-free-19.protonvpn.udp.ovpn, ip=117.4.246.88
+server=us-free-8.protonvpn.udp.ovpn, ip=156.146.54.82

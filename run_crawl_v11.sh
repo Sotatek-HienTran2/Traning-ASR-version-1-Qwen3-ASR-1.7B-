@@ -3,10 +3,19 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PY=/home/hientran/miniconda3/envs/crawl/bin/python3
-CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_khoa_hoc_6.txt
+CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_khoa_hoc_2.txt
 MAX_RESULTS=5000
 MAX_FETCH=3000
 VIDEO_DELAY=8
+
+# v11: Per-instance tunnel isolation.
+# Mỗi instance PHẢI có ID riêng để:
+#   - Tunnel của instance A không bị instance B kill nhầm.
+#   - Cleanup khi exit chỉ kill tunnel của đúng instance đó.
+# Có thể override bằng env var INSTANCE_ID hoặc argument thứ 1:
+#   ./run_crawl_v11.sh                    # auto: pid{os.getpid()}_t{time}
+#   INSTANCE_ID=inst_a ./run_crawl_v11.sh # dùng id cố định
+INSTANCE_ID="${INSTANCE_ID:-pid$$_t$(date +%s)}"
 
 # =============================================================================
 # kill_vpn_fake_ips()
@@ -144,6 +153,82 @@ kill_vpn_fake_ips() {
   sleep 1
 }
 
+# =============================================================================
+# kill_vpn_by_instance(instance_id)
+# -----------------------------------------------------------------------------
+# v11: Kill CHỈ tunnel OpenVPN của MỘT instance cụ thể (per-instance kill).
+#
+# Khác với kill_vpn_fake_ips() ở trên: kill_vpn_fake_ips() giết TẤT CẢ tunnel
+# của user hiện tại (kể cả tunnel của instance khác đang chạy). Hàm này chỉ
+# kill tunnel của instance_id được chỉ định, an toàn cho multi-instance.
+#
+# Pattern PID file: /tmp/openvpn-proton-{instance_id}.*.pid.*.*
+# =============================================================================
+kill_vpn_by_instance() {
+  local instance_id="$1"
+  if [ -z "$instance_id" ]; then
+    echo "[kill-by-inst] instance_id rỗng → skip"
+    return 0
+  fi
+
+  echo "[kill-by-inst] Kill tunnel OpenVPN của instance='$instance_id'..."
+
+  local killed=0
+
+  # Lọc PID file matching instance_id
+  shopt -s nullglob
+  local pid_files=( /tmp/openvpn-proton-${instance_id}*.pid.*.* )
+  shopt -u nullglob
+
+  if [ "${#pid_files[@]}" -eq 0 ]; then
+    echo "[kill-by-inst]   (không có PID file nào cho instance='$instance_id')"
+    return 0
+  fi
+
+  echo "[kill-by-inst]   Tìm thấy ${#pid_files[@]} PID file → kill theo PID chính xác..."
+  for pf in "${pid_files[@]}"; do
+    local pid
+    pid="$(cat "$pf" 2>/dev/null || true)"
+    if [ -z "$pid" ] || ! [[ "$pid" =~ ^[0-9]+$ ]]; then
+      continue
+    fi
+    if ! kill -0 "$pid" 2>/dev/null; then
+      continue
+    fi
+    local proc_uid
+    proc_uid="$(awk -v p="$pid" '$1==p {print $2}' /proc/$pid/status 2>/dev/null || true)"
+    if [ -z "$proc_uid" ] || [ "$proc_uid" != "$(id -u)" ]; then
+      echo "[kill-by-inst]     • PID $pid không thuộc user hiện tại → skip"
+      continue
+    fi
+    local cmdline
+    cmdline="$(tr '\0' ' ' < /proc/$pid/cmdline 2>/dev/null || true)"
+    if ! [[ "$cmdline" == *openvpn*proton_config* ]]; then
+      echo "[kill-by-inst]     • PID $pid KHÔNG phải openvpn+proton_config → skip"
+      continue
+    fi
+    echo "[kill-by-inst]     • PID $pid ($(basename "$pf")) → SIGTERM"
+    kill -15 "$pid" 2>/dev/null || true
+    killed=$((killed + 1))
+
+    local waited=0
+    while [ $waited -lt 4 ]; do
+      if ! kill -0 "$pid" 2>/dev/null; then
+        break
+      fi
+      sleep 0.5
+      waited=$((waited + 1))
+    done
+    if kill -0 "$pid" 2>/dev/null; then
+      echo "[kill-by-inst]     • PID $pid vẫn sống sau 2s → SIGKILL"
+      kill -9 "$pid" 2>/dev/null || true
+    fi
+  done
+
+  echo "[kill-by-inst] Killed $killed tunnel(s) cho instance='$instance_id'"
+  sleep 1
+}
+
 # Đảm bảo node >= 23.5.0
 if ! command -v node >/dev/null 2>&1; then
   export PATH="$HOME/.local/bin:$PATH"
@@ -160,23 +245,24 @@ if [ "${NODE_MAJOR:-0}" -lt 23 ] || \
 fi
 
 echo "[run_crawl] node $(node --version) on PATH"
+echo "[run_crawl] Instance ID: $INSTANCE_ID"
 
-# === Kill hết tunnel OpenVPN fake-IP của các run cũ ===
-# Lý do: AudioIPController v5 yêu cầu IP đầu tiên LUÔN là IP THẬT (state=REAL).
-# Nếu tunnel OpenVPN cũ còn sống → system routing đi qua VPN → IP đầu tiên
-# SAI là IP fake, phá vỡ state machine REAL→FAKE.
-kill_vpn_fake_ips
+# v11: Chỉ kill tunnel CŨ của CÙNG instance_id (nếu run trước crash để lại).
+# KHÔNG gọi kill_vpn_fake_ips() nữa — nó giết cả tunnel của instance khác.
+kill_vpn_by_instance "$INSTANCE_ID"
 
 # Launch crawler directly
 echo "[run_crawl] starting crawler..."
 cd "$SCRIPT_DIR"
 
 exec "$PY" \
-  "$SCRIPT_DIR/youtube_researcher_audio_subs_multi_rotator_v10.py" \
+  "$SCRIPT_DIR/youtube_researcher_audio_subs_multi_rotator_v11.py" \
   --channels-file "$CHANNELS_FILE" \
   --max-results "$MAX_RESULTS" \
   --max-fetch "$MAX_FETCH" \
   --video-delay "$VIDEO_DELAY" \
+  --instance-id "$INSTANCE_ID" \
+  --cleanup-on-exit \
   --skip-existing \
   --audio-only 
 

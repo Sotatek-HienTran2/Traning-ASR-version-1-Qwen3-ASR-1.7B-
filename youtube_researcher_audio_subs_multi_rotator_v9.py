@@ -1,59 +1,51 @@
 #!/usr/bin/env python3
 """
-YouTube Researcher -- AUDIO + YOUTUBE SUBS (MULTI-ROTATOR) -- v8 IP-FILE RANDOM
+YouTube Researcher -- AUDIO + YOUTUBE SUBS (MULTI-ROTATOR) -- v7 HTTP-500-AWARE
 ================================================================================
 
-v8 = youtube_researcher_audio_subs_multi_rotator_v7.py + RANDOM IP từ file
-IP_foood.txt.
+v9 = youtube_researcher_audio_subs_multi_rotator_v7.py + Smart stuck-IP detection
+(đổi IP ngay lần đầu timeout thay vì đợi yt-dlp retry 5×30s)
+audio downloader. Tự động đổi IP (REAL ↔ FAKE) khi gặp HTTP 500 Internal
+Server Error liên tiếp từ googlevideo.com.
 
-Thay đổi chính so với v7:
+Vấn đề của v6:
+  Khi IP bị Google rate-limit / geo-block, YouTube trả về:
+    [download] Got error: HTTP Error 500: Internal Server Error
+  v6 chỉ retry fragment đó (yt-dlp default: fragment_retries=∞) NHƯNG:
+    - KHÔNG đổi IP → cứ retry trên IP chết → tốn bandwidth vô ích.
+    - KHÔNG phát hiện IP bị block → fail mãi không tiến triển.
+    - KHÔNG giới hạn số fragment 500 → có thể stuck 30+ phút ở 1 video.
 
-  1) **BỎ state machine REAL/FAKE cố định** cho audio IP. Trước đây v7 luôn
-     bắt đầu 1 video với IP THẬT (REAL), rồi mới chuyển sang FAKE (VPN) nếu
-     IP thật chậm → rồi mới cycle về REAL sau 5 lần FAKE chậm.
-     v8 đơn giản hóa: BẮT ĐẦU MỖI VIDEO → CHỌN NGẪU NHIÊN 1 IP trong danh
-     sách file `IP_foood.txt` (mặc định `<script_dir>/IP_foood.txt`).
+v7 fix bằng cách thêm HTTP500Detector:
+  - Bắt pattern "HTTP Error 500" trong stderr của yt-dlp (real-time).
+  - Track fragment fail count per download.
+  - Nếu fragment_500_count >= ngưỡng (mặc định 5) → force rotate IP
+    (REAL → FAKE, FAKE khác, hoặc cycle về REAL).
+  - Kết hợp với stall detector: nếu bytes không tăng trong N giây → flag stuck
+    → cũng trigger rotate.
+  - Giảm fragment_retries từ ∞ xuống 5 (yt-dlp default) → tránh retry vô tận
+    trên IP chết. Khi hết retry mà vẫn 500 → catch exception → cycle IP.
 
-  2) **Sau MỖI audio download mới** → đổi sang 1 IP random khác (cũng từ
-     `IP_foood.txt`). Mục đích: tránh dùng lại IP vừa download xong → hạn
-     chế Google rate-limit theo IP.
-
-File IP_foood.txt format (mỗi dòng 1 entry):
-    server=ca-free-14.protonvpn.udp.ovpn, ip=118.70.190.141
-    server=jp-free-3.protonvpn.udp.ovpn, ip=117.4.246.88
-    ...
-  - server: tên file .ovpn trong proton_config/
-  - ip: public IP tương ứng (chỉ để log / debug, không lookup).
-  - Dòng bắt đầu bằng '#' → comment, bỏ qua.
-  - Dòng rỗng → bỏ qua.
-
-Lưu ý:
-  - Nếu IP_foood.txt chỉ có 1 IP → dùng lại IP đó cho mọi audio (giống v7).
-  - Nếu IP_foood.txt rỗng → fallback chọn ngẫu nhiên 1 .ovpn trong
-    proton_config/ (giống VPNRotator.next()).
-  - Mỗi IP được CHỌN NGẪU NHIÊN độc lập, KHÔNG theo counter / cooldown.
-    Nếu IP fail nhiều lần → caller vẫn có thể trigger VPNRotator force_rotate
-    để retry.
-
-v8 giữ tất cả fix từ v7:
-  - AudioIPController (state machine REAL/FAKE cho audio download) — bị
-    VÔ HIỆU HÓA bởi v8 (state luôn ở "random file IP", nhưng class vẫn
-    còn để tương thích ngược với code cũ).
+v7 cũng giữ tất cả fix từ v6:
+  - AudioIPController (state machine REAL/FAKE cho audio download)
   - 5 fix audio: _is_valid_wav, _build_audio_index chỉ .wav,
     _cleanup_orphan_part_files + cleanup_all_subdirs, BUG #2 fix rename,
     BUG #3 fix cleanup orphan sau rename.
+  - RESET state → REAL mỗi video (Option A).
   - kill_all_vpn_tunnels() toàn cục.
   - YouTubeKeyRotator: rotate API key khi quotaExceeded.
+
+v7 thêm mới:
   - HTTP500Detector class: đếm HTTP 500 từ stderr + track per-fragment.
   - StallDetector: phát hiện bytes không tăng trong N giây (proxy cho stuck).
   - _is_youtube_blocked_error(): thêm "500", "internal server error".
   - extract_info retry: giảm fragment_retries xuống 5, retries xuống 5.
-
-v8 thêm mới:
-  - IPFileRotator class: đọc IP_foood.txt → pick random IP.
-  - _ensure_random_ip() helper: gọi ở đầu mỗi video + sau mỗi download.
-  - 1 tham số CLI mới:
-      --ip-file (default ./IP_foood.txt) : file chứa danh sách IP.
+  - Exception handler cuối: catch fragment 500 fail → trigger cycle IP.
+  - 3 tham số CLI mới:
+      --audio-500-threshold (default 5)  : số fragment 500 trước khi cycle
+      --audio-stall-seconds (default 30) : bytes không tăng → stuck → cycle
+      --audio-max-500-retries (default 3): số lần retry toàn bộ download
+                                           khi gặp 500 sau khi đã cycle IP
 
 Output:
   <output>/
@@ -66,22 +58,20 @@ Output:
     logs/crawl_<instance_id>.log
 
 CÁCH DÙNG:
-    python youtube_researcher_audio_subs_multi_rotator_v8.py \\
+    python youtube_researcher_audio_subs_multi_rotator_v7.py \\
         --channels-file ./channels_audio/channels_khoa_hoc_2.txt \\
         --output ./youtube_dataset_resumable \\
         --use-vpn --vpn-isolated \\
         --instance-id inst1 \\
-        --ip-file ./IP_foood.txt \\
         --video-delay 5 --skip-existing
 
     # Rebuild CSV/summary từ JSON có sẵn (không gọi API, không tải audio)
-    python youtube_researcher_audio_subs_multi_rotator_v8.py \\
+    python youtube_researcher_audio_subs_multi_rotator_v7.py \\
         --rebuild-from-transcripts
 """
 
 import json
 import os
-import random
 import re
 import sys
 import time
@@ -91,6 +81,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
+
+
+# === v9: Smart downloader with stuck-IP detection ===
+V9_SMART_AVAILABLE = False
+try:
+    from v9_smart_downloader import (
+        get_smart_downloader, classify_error, SmartDownloader,
+    )
+    V9_SMART_AVAILABLE = True
+except Exception as _v9e:
+    print(f"  [v9-warn] SmartDownloader không khả dụng: {_v9e}", flush=True)
 
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -243,160 +244,6 @@ def kill_all_vpn_tunnels():
 
     print(f"[kill-vpn] Tổng: {killed_pid} PID (theo file) + {killed_pkill} nhóm fallback pkill")
     _t.sleep(1)
-
-
-# ================= IP FILE ROTATOR (v8) =================
-class IPFileRotator:
-    """v8: Random IP picker từ file IP_foood.txt.
-
-    Mục đích:
-      - v7 dùng AudioIPController state machine REAL↔FAKE cố định → IP đầu tiên
-        của mỗi video LUÔN là IP thật → dễ bị Google rate-limit dần.
-      - v8 đơn giản hóa: MỖI VIDEO + MỖI DOWNLOAD MỚI → chọn NGẪU NHIÊN 1 IP
-        trong file IP_foood.txt → IP trước đó KHÔNG được dùng lại ngay.
-
-    File format (mỗi dòng 1 entry):
-        server=ca-free-14.protonvpn.udp.ovpn, ip=118.70.190.141
-        # comment line, bỏ qua
-        server=jp-free-3.protonvpn.udp.ovpn, ip=117.4.246.88
-
-    Attributes:
-        ip_file_path: Path tới file IP_foood.txt
-        entries: list[(server: str, ip: str)] - danh sách IP parse được
-        current: tuple (server, ip) - IP hiện tại đang được chọn
-        history: list - lịch sử các IP đã dùng (cho log/debug)
-        _lock: threading.Lock
-
-    Public API:
-        next() -> Optional[(server, ip)]:
-            Chọn RANDOM 1 entry từ file. Lưu vào `current` + append history.
-            Trả None nếu file rỗng / lỗi parse.
-        apply_to_rotator(audio_rotator) -> bool:
-            Apply IP đã chọn vào VPNRotator:
-              - Nếu entry có 'server' (.ovpn filename) trong proton_config/:
-                  gọi audio_rotator.next() để trigger connect VPN server đó.
-              - Luôn trả True (kể cả khi audio_rotator không có method next()).
-        stats() -> dict: trả về stats cho log/summary.
-    """
-
-    def __init__(self, ip_file_path: Path | str, instance_id: str = ""):
-        self.ip_file_path = Path(ip_file_path)
-        self.instance_id = instance_id
-        self.entries: list[tuple[str, str]] = []  # [(server, ip), ...]
-        self.current: Optional[tuple[str, str]] = None
-        self.history: list[tuple[str, str]] = []
-        self._lock = threading.Lock()
-        self._load_entries()
-
-    def _load_entries(self):
-        """Đọc IP_foood.txt → parse entries.
-
-        Format mỗi dòng:
-            server=<ovpn_filename>, ip=<public_ip>
-
-        Bỏ qua:
-          - Dòng rỗng
-          - Dòng comment (bắt đầu bằng '#')
-        """
-        if not self.ip_file_path.exists():
-            print(f"  [v8-ip-rotator] WARN: file {self.ip_file_path} không tồn tại. "
-                  f"Sẽ fallback về VPNRotator random.", flush=True)
-            self.entries = []
-            return
-
-        parsed = []
-        try:
-            with open(self.ip_file_path, "r", encoding="utf-8") as f:
-                for lineno, raw_line in enumerate(f, 1):
-                    line = raw_line.strip()
-                    if not line or line.startswith("#"):
-                        continue
-                    server = ""
-                    ip = ""
-                    for part in line.split(","):
-                        part = part.strip()
-                        if "=" not in part:
-                            continue
-                        k, _, v = part.partition("=")
-                        k = k.strip().lower()
-                        v = v.strip()
-                        if k == "server":
-                            server = v
-                        elif k == "ip":
-                            ip = v
-                    if server and ip:
-                        parsed.append((server, ip))
-                    else:
-                        print(f"  [v8-ip-rotator] WARN: line {lineno} không parse được "
-                              f"(server/ip missing): {raw_line.rstrip()}", flush=True)
-        except Exception as e:
-            print(f"  [v8-ip-rotator] ERROR đọc {self.ip_file_path}: {e}",
-                  flush=True)
-            self.entries = []
-            return
-
-        self.entries = parsed
-        print(f"  [v8-ip-rotator] Loaded {len(self.entries)} IP entries từ "
-              f"{self.ip_file_path}", flush=True)
-        for i, (s, ip) in enumerate(self.entries, 1):
-            print(f"    [{i}] server={s}  ip={ip}", flush=True)
-
-    def next(self) -> Optional[tuple[str, str]]:
-        """Chọn RANDOM 1 entry, lưu vào self.current + history.
-
-        Returns:
-            tuple(server, ip) nếu có entries, None nếu file rỗng.
-        """
-        with self._lock:
-            if not self.entries:
-                return None
-            # random.choice đảm bảo uniform random
-            entry = random.choice(self.entries)
-            self.current = entry
-            self.history.append(entry)
-            # Giữ history tối đa 50 entries (tránh memory leak)
-            if len(self.history) > 50:
-                self.history = self.history[-50:]
-            return entry
-
-    def apply_to_rotator(self, audio_rotator) -> bool:
-        """Apply IP đã chọn vào VPNRotator (nếu có method next()).
-
-        Hiện tại logic:
-          - audio_rotator.next() (VPNRotator) sẽ tự rotate random qua các server.
-            Nếu file IP_foood.txt có entry với server=.ovpn_filename nằm trong
-            config_dir, ta KHÔNG ép được rotator dùng đúng server đó (vì
-            VPNRotator.next() dùng strategy random/sequential/least_used).
-          - Workaround: v8 chỉ cần "đổi IP" → gọi force_rotate() nếu có, hoặc
-            next() (sẽ trigger rotate nếu đủ điều kiện).
-
-        Returns:
-            True nếu apply được (kể cả khi không có method), False nếu lỗi.
-        """
-        if audio_rotator is None:
-            return False
-        try:
-            # Ưu tiên force_rotate (luôn trigger đổi server ngay)
-            if hasattr(audio_rotator, "force_rotate"):
-                audio_rotator.force_rotate(f"v8-random-ip {self.current}")
-                return True
-            # Fallback: next() (chỉ trigger rotate nếu rotate_every đạt)
-            if hasattr(audio_rotator, "next"):
-                audio_rotator.next()
-                return True
-        except Exception as e:
-            print(f"  [v8-ip-rotator] apply_to_rotator error: {e}", flush=True)
-            return False
-        return False
-
-    def stats(self) -> dict:
-        return {
-            "ip_file": str(self.ip_file_path),
-            "total_entries": len(self.entries),
-            "current_server": self.current[0] if self.current else None,
-            "current_ip": self.current[1] if self.current else None,
-            "history_count": len(self.history),
-        }
 
 
 # ================= YOUTUBE KEY ROTATOR (v6 port từ sub_playlist.py) =================
@@ -841,25 +688,40 @@ class HTTP500Detector:
         self._last_progress_bytes = 0
         self._last_progress_t = None
         self._stall_flag = False
+        # v10: timestamp lần cuối fire stall callback. Dùng để fire lặp lại
+        # mỗi `stall_seconds` khi vẫn stuck (trước đây fire 1 lần rồi tắt →
+        # nếu yt-dlp vẫn retry trên IP chết, không có signal nhảy IP lần 2).
+        self._last_stall_fire_t = None
 
     def reset(self):
         """Public API: gọi khi bắt đầu video mới (C-{i})."""
         self._reset_per_download()
 
     def on_stderr_line(self, line: str) -> bool:
-        """Hook vào yt-dlp stderr output. Trả True nếu line chứa HTTP 500.
+        """Hook vào yt-dlp stderr output. Trả True nếu line chứa HTTP 500
+        HOẶC Read timed out (HTTPSConnectionPool timeout).
 
         Args:
             line: 1 dòng stderr (đã strip newline).
 
         Returns:
-            True nếu line là HTTP 500 error.
+            True nếu line là HTTP 500/503 error HOẶC timeout/network error.
         """
         if not line:
             return False
         # Pattern thực tế từ log:
         #   "[download] Got error: HTTP Error 500: Internal Server Error"
-        if "HTTP Error 500" in line or "HTTP Error 503" in line:
+        #   "[download] Got error: HTTPSConnectionPool(...): Read timed out. (read timeout=30.0)"
+        if ("HTTP Error 500" in line
+            or "HTTP Error 503" in line
+            or "Read timed out" in line             # <-- MỚI: bắt timeout
+            or "HTTPSConnectionPool" in line        # <-- MỚI: bắt timeout ở host khác
+            or "ConnectionTimeout" in line          # <-- MỚI: bắt connect timeout
+            or "Connection reset" in line           # <-- MỚI: bắt connection reset
+            or "Connection aborted" in line         # <-- MỚI: bắt aborted
+            or "ConnectionRefusedError" in line     # <-- MỚI: bắt refused
+            or "Connection refused" in line         # <-- MỚI: bắt refused text
+        ):
             return True
         return False
 
@@ -891,6 +753,11 @@ class HTTP500Detector:
     def on_progress_check_stall(self, bytes_dl: int, now: float) -> bool:
         """Gọi từ progress_hook mỗi lần. Phát hiện "stuck" (bytes không tăng).
 
+        v10 FIX: Fire callback MỖI `stall_seconds` khi vẫn stuck (không chỉ
+        1 lần như trước). Lý do: nếu IP bị stuck, yt-dlp sẽ retry fragment
+        đó nhiều lần. Nếu stall detector chỉ fire 1 lần, IP sẽ bị cycle
+        1 lần rồi vẫn stuck ở IP mới (cũng fail) → không có signal nhảy lần 2.
+
         Args:
             bytes_dl: bytes đã tải (từ yt-dlp progress hook).
             now: time.time() hiện tại.
@@ -908,22 +775,31 @@ class HTTP500Detector:
             self._last_progress_t = now
             self._last_progress_bytes = bytes_dl
             self._stall_flag = False
+            self._last_stall_fire_t = None  # v10: reset để lần sau fire lại từ đầu
             return False
 
         # bytes không tăng → check stall
         elapsed = now - self._last_progress_t
-        if elapsed >= self.stall_seconds and not self._stall_flag:
-            self._stall_flag = True
-            self.total_stall_events += 1
-            if self.on_http500_threshold:
-                try:
-                    self.on_http500_threshold(
-                        self._fragment_500_count, 0)
-                except Exception as e:
-                    print(f"    [http500-detector] stall callback error: {e}",
-                          flush=True)
-            return True
-        return False
+        if elapsed < self.stall_seconds:
+            return False
+
+        # v10: Fire mỗi `stall_seconds` khi vẫn stuck (không phải chỉ 1 lần)
+        last_fire = self._last_stall_fire_t
+        if last_fire is not None and (now - last_fire) < self.stall_seconds:
+            # Đã fire gần đây rồi → đợi thêm
+            return False
+
+        self._stall_flag = True
+        self._last_stall_fire_t = now
+        self.total_stall_events += 1
+        if self.on_http500_threshold:
+            try:
+                self.on_http500_threshold(
+                    self._fragment_500_count, 0)
+            except Exception as e:
+                print(f"    [http500-detector] stall callback error: {e}",
+                      flush=True)
+        return True
 
     def is_stalled(self) -> bool:
         return self._stall_flag
@@ -1012,6 +888,7 @@ class AudioIPController:
         min_bytes_for_speed: int = 256 * 1024,
         min_window_seconds: float = 5.0,
         speed_avg_window_seconds: float = 10.0,
+        force_real_after_n_fake_fails: int = 2,    # v10
     ):
         self.audio_rotator = audio_rotator
         self.min_speed_mbps = min_speed_mbps
@@ -1019,6 +896,10 @@ class AudioIPController:
         self.min_bytes_for_speed = min_bytes_for_speed
         self.min_window_seconds = min_window_seconds
         self.speed_avg_window_seconds = speed_avg_window_seconds
+        # v10: Số lần fail liên tiếp ở FAKE (ok=False) trước khi cycle về REAL
+        # thay vì chỉ force_rotate VPN. Mặc định 2. Trước đây cần đợi
+        # fake_before_real=5 lần → quá chậm khi IP bị stuck/block.
+        self.force_real_after_n_fake_fails = force_real_after_n_fake_fails
 
         # State
         self._state = self.STATE_REAL
@@ -1076,10 +957,14 @@ class AudioIPController:
     def on_download_complete(self, bytes_dl: int, elapsed_s: float, ok: bool):
         """Callback sau khi download xong (ok) hoặc fail (ok=False).
 
-        PRIORITY LOGIC:
+        PRIORITY LOGIC (v10):
           - Ưu tiên #1: Download nhanh (tốc độ >= 1.0 MB/s) → GIỮ IP hiện tại
           - Ưu tiên #2: Khi chậm → nhảy IP (REAL→FAKE, hay rotate VPN server)
-          - Ưu tiên #3: Cycle về REAL sau 5 lần FAKE chậm (reset rate-limit)
+          - Ưu tiên #3 (v10 MỚI): Cycle về REAL sau `force_real_after_n_fake_fails`
+            (mặc định 2) lần FAIL liên tiếp ở FAKE (ok=False). Trước đây cần
+            đợi `fake_before_real` (5) lần → quá chậm khi IP bị stuck.
+          - Ưu tiên #4: Cycle về REAL sau `fake_before_real` (5) lần FAKE
+            CHẬM (speed < threshold) — giữ logic cũ cho speed-based.
 
         Args:
             bytes_dl: tổng bytes đã tải được (có thể = 0 nếu fail ngay).
@@ -1106,14 +991,14 @@ class AudioIPController:
             if speed_ok:
                 # ✅ REAL IP TỐT: tốc độ >= 1.0 MB/s → GIỮ REAL
                 print(f"    [audio-ip] ✅ REAL OK: {bytes_dl//1024}KB in {elapsed_s:.1f}s "
-                      f"= {speed_mbps:.2f} MB/s (>= {self.min_speed_mbps} MB/s) → GIỮ REAL", flush=True)
+                      f"= {speed_mbps:.2f} MB/s (>= {self.min_speed_mbps} MB/s) → GIỮ REAL [reason=speed_ok]", flush=True)
                 self._slow_flag = False
                 self._consecutive_fake_slow = 0  # reset counter (just in case)
                 return
             # ❌ REAL IP CHẬM: tốc độ < 1.0 MB/s → thử FAKE (VPN)
             print(f"    [audio-ip] ❌ REAL SLOW/FAIL: {bytes_dl//1024}KB in {elapsed_s:.1f}s "
                   f"= {speed_mbps:.2f} MB/s (ok={ok}, slow_flag={self._slow_flag}) "
-                  f"→ NHẢY sang FAKE (test VPN)", flush=True)
+                  f"→ NHẢY sang FAKE (test VPN) [reason=rotate_to_fake]", flush=True)
             self._state = self.STATE_FAKE
             self._consecutive_fake_slow = 0  # reset counter (chưa thử FAKE nào cả)
             self._slow_flag = False
@@ -1124,20 +1009,23 @@ class AudioIPController:
         if speed_ok:
             # ✅ FAKE IP TỐT: tốc độ >= 1.0 MB/s → GIỮ FAKE (không rotate)
             print(f"    [audio-ip] ✅ FAKE OK: {bytes_dl//1024}KB in {elapsed_s:.1f}s "
-                  f"= {speed_mbps:.2f} MB/s → GIỮ VPN server hiện tại", flush=True)
+                  f"= {speed_mbps:.2f} MB/s → GIỮ VPN server hiện tại [reason=speed_ok]", flush=True)
             self._consecutive_fake_slow = 0  # reset counter (tốc độ phục hồi)
             self._slow_flag = False
             return
 
-        # ❌ FAKE IP CHẬM: tốc độ < 1.0 MB/s → tăng counter
-        self._consecutive_fake_slow += 1
-        
-        if self._consecutive_fake_slow >= self.fake_before_real:
-            # Đã chậm liên tiếp 5 lần ở FAKE → CYCLE về REAL
-            # Lý do: Có thể REAL rate-limit đã reset, hoặc VPN tunnel chất lượng kém
-            print(f"    [audio-ip] ❌ FAKE SLOW {self._consecutive_fake_slow}/{self.fake_before_real} lần "
-                  f"liên tiếp: {bytes_dl//1024}KB in {elapsed_s:.1f}s "
-                  f"= {speed_mbps:.2f} MB/s → CYCLE về REAL (reset rate-limit)", flush=True)
+        # ❌ FAKE IP CHẬM/FAIL: speed không OK → tăng counter
+        # v10 FIX: Nếu ok=False (download fail, không phải chỉ chậm) VÀ đã
+        # fail >= force_real_after_n_fake_fails lần liên tiếp ở FAKE → cycle
+        # về REAL NGAY. Lý do: fail lặp lại = IP VPN/host bị stuck, force_rotate
+        # sang VPN server khác không giúp ích vì tunnel vẫn đi qua cùng egress
+        # hoặc host `rr1---sn-*.googlevideo.com` vẫn bị Google block.
+        if not ok and (self._consecutive_fake_slow + 1) >= self.force_real_after_n_fake_fails:
+            # Đã fail liên tiếp >= force_real_after_n_fake_fails lần ở FAKE → CYCLE REAL
+            print(f"    [audio-ip] ❌ FAKE FAIL {self._consecutive_fake_slow + 1}/{self.force_real_after_n_fake_fails} lần "
+                  f"liên tiếp (ok=False): {bytes_dl//1024}KB in {elapsed_s:.1f}s "
+                  f"= {speed_mbps:.2f} MB/s → CYCLE về REAL [reason=force_real_after_{self.force_real_after_n_fake_fails}_fake_fails]",
+                  flush=True)
             self._state = self.STATE_REAL
             self._consecutive_fake_slow = 0
             self._slow_flag = False
@@ -1145,10 +1033,28 @@ class AudioIPController:
             self._ensure_vpn_disconnected()
             return
 
-        # Chưa đủ 5 lần → force_rotate sang VPN server khác
-        print(f"    [audio-ip] ❌ FAKE SLOW {self._consecutive_fake_slow}/{self.fake_before_real}: "
+        self._consecutive_fake_slow += 1
+
+        if self._consecutive_fake_slow >= self.fake_before_real:
+            # Đã chậm liên tiếp fake_before_real lần ở FAKE → CYCLE về REAL
+            # Lý do: Có thể REAL rate-limit đã reset, hoặc VPN tunnel chất lượng kém
+            print(f"    [audio-ip] ❌ FAKE SLOW {self._consecutive_fake_slow}/{self.fake_before_real} lần "
+                  f"liên tiếp: {bytes_dl//1024}KB in {elapsed_s:.1f}s "
+                  f"= {speed_mbps:.2f} MB/s → CYCLE về REAL (reset rate-limit) [reason=fake_before_real_reached]",
+                  flush=True)
+            self._state = self.STATE_REAL
+            self._consecutive_fake_slow = 0
+            self._slow_flag = False
+            self._total_rotates += 1
+            self._ensure_vpn_disconnected()
+            return
+
+        # Chưa đủ ngưỡng → force_rotate sang VPN server khác
+        # (chỉ áp dụng khi speed chậm nhưng OK, hoặc fail lần đầu tiên)
+        print(f"    [audio-ip] ❌ FAKE SLOW/FAIL {self._consecutive_fake_slow}/{self.fake_before_real}: "
               f"{bytes_dl//1024}KB in {elapsed_s:.1f}s = {speed_mbps:.2f} MB/s "
-              f"→ force_rotate sang VPN server khác", flush=True)
+              f"→ force_rotate sang VPN server khác [reason=force_rotate_via_smart_dl]",
+              flush=True)
         self._slow_flag = False
         self._total_rotates += 1
         try:
@@ -1566,8 +1472,7 @@ class YouTubeResearcher:
                  audio_speed_avg_window_seconds: float = 10.0,
                  audio_500_threshold: int = 5,
                  audio_stall_seconds: float = 30.0,
-                 ip_file: Optional[str] = None,
-                 instance_id: str = ""):
+                 audio_force_real_after_fails: int = 2):    # v10
         self.api_key = api_key
         # v6: YouTubeKeyRotator cho Phase 1 (playlistItems.list).
         # Nếu không truyền → tự tạo từ api_key (single-key mode, không rotate).
@@ -1612,6 +1517,7 @@ class YouTubeResearcher:
             min_bytes_for_speed=audio_min_bytes_for_speed,
             min_window_seconds=audio_min_window_seconds,
             speed_avg_window_seconds=audio_speed_avg_window_seconds,
+            force_real_after_n_fake_fails=audio_force_real_after_fails,  # v10
         )
 
         # === v7: HTTP500Detector (bắt HTTP 500 liên tiếp → cycle IP) ===
@@ -1621,20 +1527,12 @@ class YouTubeResearcher:
             stall_seconds=audio_stall_seconds,
             on_http500_threshold=self._on_http500_threshold,
         )
-
-        # === v8: IPFileRotator (random IP từ IP_foood.txt) ===
-        # THAY THẾ logic "luôn bắt đầu REAL" của v7. Mỗi download sẽ:
-        #   1) Gọi _ensure_random_ip() → pick random IP từ file.
-        #   2) Áp IP đó vào audio_rotator (force_rotate).
-        # File mặc định: <script_dir>/IP_foood.txt (có thể override bằng --ip-file).
-        ip_file_path = (
-            Path(ip_file) if ip_file
-            else (Path(__file__).parent / "IP_foood.txt")
-        )
-        self._ip_file_rotator = IPFileRotator(
-            ip_file_path=ip_file_path,
-            instance_id=instance_id,
-        )
+        # === v9: Smart downloader for stuck-IP detection ===
+        self._smart_dl = get_smart_downloader(
+            ip_controller=getattr(self, '_audio_ip_ctl', None),
+            audio_rotator=getattr(self, '_audio_rotator', None),
+            http500_detector=self._http500_detector,
+        ) if V9_SMART_AVAILABLE else None
 
     def _next_proxy(self) -> Optional[str]:
         if not self._rotator:
@@ -1785,74 +1683,34 @@ class YouTubeResearcher:
         Trigger cycle IP thông qua AudioIPController.on_download_complete()
         với ok=False. Controller sẽ:
           - Nếu đang REAL → chuyển sang FAKE (test VPN).
-          - Nếu đang FAKE + consecutive_fake_slow < fake_before_real
+          - Nếu đang FAKE + consecutive_fake_slow < force_real_after_n_fake_fails (2)
             → force_rotate sang VPN server khác.
-          - Nếu đang FAKE + consecutive_fake_slow >= fake_before_real
-            → cycle về REAL.
+          - Nếu đang FAKE + consecutive_fake_slow >= force_real_after_n_fake_fails (2)
+            → cycle về REAL NGAY (v10: thay vì chờ fake_before_real=5).
 
         Args:
             fragment_500_count: số fragment 500 trong download hiện tại.
             total_frags: tổng fragment (0 nếu trigger từ stall detector).
         """
         kind = "stall" if total_frags == 0 else "HTTP 500"
+        current_state = self._audio_ip_ctl.get_state()
         print(f"  [v7-detector] ⚠️  {kind} threshold hit: "
               f"{fragment_500_count} fragments, {total_frags} total frags. "
-              f"→ CYCLE IP via AudioIPController", flush=True)
+              f"state={current_state} "
+              f"→ cycle IP via AudioIPController [reason={kind.lower().replace(' ', '_')}_detected]",
+              flush=True)
 
         # Báo cho AudioIPController: fail = ok=False. Controller sẽ tự quyết
         # định state tiếp theo dựa trên state hiện tại + counter.
         try:
-            # Lấy thời gian download hiện tại (nếu có _dl_state trong scope)
-            elapsed = time.time()
-            try:
-                # _dl_state là biến local trong _process_videos_pipeline,
-                # nhưng ta vẫn truyền giá trị hợp lý cho controller.
-                # on_download_complete nhận elapsed_s để tính speed.
-                # Với ok=False, controller KHÔNG tính speed, chỉ tăng counter
-                # fake_slow hoặc switch REAL→FAKE.
-                elapsed = 1.0  # dummy để tránh div-by-zero
-            except Exception:
-                pass
+            # Dùng elapsed dummy để tránh div-by-zero (controller tính speed
+            # nhưng với ok=False thì speed_ok=False, không ảnh hưởng).
+            elapsed = 1.0
             self._audio_ip_ctl.on_download_complete(
                 bytes_dl=0, elapsed_s=elapsed, ok=False,
             )
         except Exception as e:
             print(f"  [v7-detector] on_download_complete error: {e}", flush=True)
-
-    def _ensure_random_ip(self, reason: str = "video_start"):
-        """v8: Pick RANDOM IP từ IP_foood.txt + apply vào audio_rotator.
-
-        Đây là method TRUNG TÂM của v8. Được gọi ở 2 nơi:
-          1) Đầu mỗi video mới (trước khi download audio lần đầu).
-          2) SAU MỖI audio download thành công → trước khi video tiếp theo.
-
-        Logic:
-          - IPFileRotator.next() → chọn random 1 entry từ file.
-          - apply_to_rotator() → gọi audio_rotator.force_rotate() để apply.
-          - Nếu file rỗng → KHÔNG gọi rotator (giữ state hiện tại).
-
-        Args:
-            reason: chuỗi log ("video_start", "after_download", "retry"...)
-        """
-        try:
-            entry = self._ip_file_rotator.next()
-            if entry is None:
-                print(f"  [v8-ip] IP_foood.txt rỗng → KHÔNG rotate "
-                      f"(reason={reason}). Dùng IP rotator mặc định.",
-                      flush=True)
-                return
-            server, ip = entry
-            print(f"  [v8-ip] 🎲 RANDOM IP (reason={reason}): "
-                  f"server={server}  ip={ip}", flush=True)
-            applied = self._ip_file_rotator.apply_to_rotator(self._audio_rotator)
-            if applied:
-                print(f"  [v8-ip] ✓ applied to audio_rotator", flush=True)
-            else:
-                print(f"  [v8-ip] ⚠️  audio_rotator không có force_rotate/next() "
-                      f"→ skip apply", flush=True)
-        except Exception as e:
-            print(f"  [v8-ip] _ensure_random_ip error (ignored): {e}",
-                  flush=True)
 
     def _on_youtube_blocked(self, err, proxy_url, context: str):
         if not proxy_url:
@@ -3672,7 +3530,7 @@ def parse_args():
     p.add_argument("--socket-timeout", type=int, default=30)
     p.add_argument("--max-retries", type=int, default=2)
     p.add_argument("--max-sentence-duration", type=int, default=31.0)
-    p.add_argument("--min-sentence-words", type=int, default=1)
+    p.add_argument("--min-sentence-words", type=int, default=1) 
     p.add_argument("--instance-id", default=None)
     p.add_argument("--cache-dir", default=None)
     p.add_argument("--vpn-isolated", action=argparse.BooleanOptionalAction, default=True)
@@ -3689,10 +3547,10 @@ def parse_args():
     p.add_argument("--audio-min-bytes-for-speed", type=int, default=256 * 1024,
                    help="v5: Tối thiểu bytes đã tải trước khi đánh giá tốc độ "
                         "(tránh false positive với file nhỏ). Mặc định: 262144 (256KB).")
-    p.add_argument("--audio-min-window-seconds", type=float, default=30.0,
+    p.add_argument("--audio-min-window-seconds", type=float, default=15,
                    help="v5: Tối thiểu thời gian (giây) trước khi đánh giá tốc độ. "
                         "Mặc định: 10.0")
-    p.add_argument("--audio-speed-avg-window-seconds", type=float, default=30.0,
+    p.add_argument("--audio-speed-avg-window-seconds", type=float, default=15,
                    help="v5: Cửa sổ (giây) để tính TỐC ĐỘ TRUNG BÌNH (rolling average). "
                         "Mỗi chunk mới sẽ được lưu vào buffer, tốc độ TB = "
                         "(bytes mới nhất - bytes cũ nhất trong window) / window_size. "
@@ -3708,13 +3566,12 @@ def parse_args():
                    help="v7: Nếu bytes không tăng trong N giây (progress hook "
                         "báo downloaded_bytes không đổi) → flag stuck → cũng "
                         "trigger cycle IP. Mặc định: 30.0")
-    # === v8: IP FILE ROTATOR (random từ IP_foood.txt) ===
-    p.add_argument("--ip-file", default="./IP_foood.txt",
-                   help="v8: File chứa danh sách IP để pick random cho mỗi "
-                        "audio download. Mỗi dòng format: "
-                        "'server=<ovpn_filename>, ip=<public_ip>'. "
-                        "Mặc định: ./IP_foood.txt. Nếu file rỗng → "
-                        "fallback VPNRotator random.")
+    # === v10: Force REAL sau N lần FAIL liên tiếp ở FAKE ===
+    p.add_argument("--audio-force-real-after-fails", type=int, default=2,
+                   help="v10: Số lần FAIL liên tiếp ở FAKE (ok=False) trước khi "
+                        "cycle về REAL NGAY thay vì chỉ force_rotate VPN. "
+                        "Trước đây cần đợi fake_before_real=5 lần → quá chậm. "
+                        "Mặc định: 2. Set 0 = tắt (giữ logic cũ).")
     return p.parse_args()
 
 
@@ -3781,8 +3638,7 @@ def process_one_channel(
     audio_speed_avg_window_seconds: float = 10.0,
     audio_500_threshold: int = 5,           # v7
     audio_stall_seconds: float = 30.0,      # v7
-    ip_file: Optional[str] = None,          # v8
-    instance_id: str = "",                 # v8
+    audio_force_real_after_fails: int = 2, # v10
 ) -> dict:
     channel_name = safe_channel_name(channel_url)
     channel_output = Path(output_root) / channel_name
@@ -3832,8 +3688,7 @@ def process_one_channel(
         audio_speed_avg_window_seconds=audio_speed_avg_window_seconds,
         audio_500_threshold=audio_500_threshold,         # v7
         audio_stall_seconds=audio_stall_seconds,         # v7
-        ip_file=ip_file,                                 # v8
-        instance_id=instance_id,                         # v8
+        audio_force_real_after_fails=audio_force_real_after_fails,  # v10
     )
     try:
         researcher.fetch_channel_videos(
@@ -4337,49 +4192,45 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
         _log(f"[C-{i}/{len(bucket_c)}] {video.video_id} | {video.title[:50]} "
              f"-> download + transcribe", also_print=False)
 
-        # v8: Đầu MỖI VIDEO MỚI → RANDOM IP từ IP_foood.txt (KHÔNG dùng IP thật
-        # cố định như v7). Mục đích: tránh IP bị Google rate-limit do dùng lặp lại.
-        #
-        # Logic:
-        #   1) Kill hết VPN tunnel cũ (giống v7).
-        #   2) Reset counters của AudioIPController.
-        #   3) Gọi _ensure_random_ip("video_start") → pick random IP + apply.
-        #   4) Reset HTTP500Detector.
-        #
-        # Lưu ý: AudioIPController vẫn được dùng cho:
-        #   - Đo tốc độ trong download (chunk progress hook).
-        #   - Đếm HTTP 500 (HTTP500Detector callback).
-        # NHƯNG state machine REAL/FAKE bị BỎ QUA trong v8 (vì IP đã được
-        # pick random từ file trước khi download bắt đầu).
+        # v5.13 OPTION A: Đầu MỖI VIDEO MỚI → RESET state về REAL + KILL HẾT
+        # VPN tunnel (toàn bộ rotator, không chỉ audio_rotator).
+        # Lý do: state machine ở v5.9 giữ state qua video → nếu video trước
+        # dùng FAKE thì video này vẫn dùng FAKE. Khi VPN server bị rate-limit
+        # dần qua nhiều video, state không reset → fail mãi.
+        # Reset về REAL mỗi video đảm bảo:
+        #   1) Mỗi video LUÔN thử IP thật trước → có cơ hội reset rate-limit
+        #      counter (YouTube clear rate-limit cho IP thật hơn so với IP VPN).
+        #   2) Kill hết VPN tunnel → tránh /dev/net/tun bị chiếm.
+        #   3) Nếu IP thật OK (>= 1MB/s) → giữ REAL cho cả download → đỡ tốn
+        #      thời gian test 2 lần.
+        #   4) Nếu IP thật fail → tự động switch sang FAKE như cũ.
         if i >= 1:
-            print(f"  [audio-ip-v8] BẮT ĐẦU VIDEO MỚI #{i} "
-                  f"(video_id={video.video_id})", flush=True)
-            print(f"  [audio-ip-v8] → KILL ALL VPN tunnels + RESET counters + "
-                  f"PICK RANDOM IP từ IP_foood.txt", flush=True)
+            print(f"  [audio-ip] RESET state → REAL + KILL ALL VPN tunnels "
+                  f"(bắt đầu audio mới #{i}, video_id={video.video_id})",
+                  flush=True)
             # Kill hết VPN tunnel (toàn bộ rotator, không chỉ audio_rotator)
             try:
                 kill_all_vpn_tunnels()
             except Exception as e:
-                print(f"  [audio-ip-v8] kill_all_vpn_tunnels error (ignored): {e}",
+                print(f"  [audio-ip] kill_all_vpn_tunnels error (ignored): {e}",
                       flush=True)
-            # Reset counters của AudioIPController (giữ nguyên class để
-            # tương thích với chunk progress hook + HTTP500Detector).
+            # Set state=REAL + reset counters + đảm bảo audio_rotator cũng
+            # disconnect (kill_all_vpn_tunnels đã kill hết process openvpn,
+            # nhưng gọi thêm để clear state internal của rotator).
+            self._audio_ip_ctl._state = self._audio_ip_ctl.STATE_REAL
             self._audio_ip_ctl._consecutive_fake_slow = 0
             self._audio_ip_ctl._slow_flag = False
             try:
                 if hasattr(self._audio_ip_ctl.audio_rotator, "disconnect"):
                     self._audio_ip_ctl.audio_rotator.disconnect()
             except Exception as e:
-                print(f"  [audio-ip-v8] audio_rotator.disconnect error (ignored): {e}",
+                print(f"  [audio-ip] audio_rotator.disconnect error (ignored): {e}",
                       flush=True)
             # v7: Reset HTTP500Detector cho video mới
             try:
                 self._http500_detector.reset()
             except Exception as e:
                 print(f"  [v7-detector] reset error (ignored): {e}", flush=True)
-            # === v8: PICK RANDOM IP TỪ IP_foood.txt ===
-            # Đây là ĐIỂM KHÁC BIỆT CHÍNH so với v7 (v7 dùng IP thật).
-            self._ensure_random_ip(reason=f"video_start #{i} ({video.video_id})")
 
         # Delay giữa các video để tránh YouTube rate limit (429)
         if i > 1 and video_delay > 0:
@@ -4409,6 +4260,15 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                     except Exception:
                         pass
             for dl_attempt in range(1, dl_retries + 1):
+                # v10: Reset HTTP500Detector cho mỗi attempt mới để stall
+                # detector có thể fire LẠI nếu IP mới vẫn bị stuck. Nếu không
+                # reset, _stall_flag vẫn True từ attempt trước → stall không
+                # trigger lần 2 → IP sẽ bị stuck vô thời hạn trên attempt mới.
+                try:
+                    self._http500_detector.reset()
+                except Exception:
+                    pass
+
                 # v5: Chọn IP qua AudioIPController (state machine REAL/FAKE).
                 # Controller quyết định:
                 #   - IP thật: KHÔNG set proxy, KHÔNG acquire tunnel guard
@@ -4507,22 +4367,70 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                     if using_real_ip:
                         # IP thật: KHÔNG acquire tunnel, KHÔNG set proxy.
                         # Traffic đi qua default route.
-                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                            info = ydl.extract_info(video.url, download=True)
-                            filename = ydl.prepare_filename(info)
+                        if self._smart_dl is not None:
+                            # === v9: Smart retry — đổi IP NGAY khi timeout ===
+                            _smart_result = self._smart_dl.download_with_smart_retry(
+                                url=video.url,
+                                ydl_opts=ydl_opts,
+                                progress_hook=_audio_progress_hook,
+                            )
+                            if not _smart_result['ok']:
+                                raise RuntimeError(
+                                    f"SmartDownloader fail sau {_smart_result['attempts']} attempts: "
+                                    f"{_smart_result['last_error'][:200]}"
+                                )
+                            info = _smart_result['info']
+                            filename = _smart_result['filename']
+                        else:
+                            # Fallback v7: chạy ydl.extract_info gốc
+                            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                                info = ydl.extract_info(video.url, download=True)
+                                filename = ydl.prepare_filename(info)
                     elif (self._audio_rotator is not None
                           and self._audio_rotator is not self._rotator):
                         # IP fake qua audio_rotator riêng
                         with self._proxy_guard_for_audio():
-                            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                                info = ydl.extract_info(video.url, download=True)
-                                filename = ydl.prepare_filename(info)
+                            if self._smart_dl is not None:
+                                # === v9: Smart retry — đổi IP NGAY khi timeout ===
+                                _smart_result = self._smart_dl.download_with_smart_retry(
+                                    url=video.url,
+                                    ydl_opts=ydl_opts,
+                                    progress_hook=_audio_progress_hook,
+                                )
+                                if not _smart_result['ok']:
+                                    raise RuntimeError(
+                                        f"SmartDownloader fail sau {_smart_result['attempts']} attempts: "
+                                        f"{_smart_result['last_error'][:200]}"
+                                    )
+                                info = _smart_result['info']
+                                filename = _smart_result['filename']
+                            else:
+                                # Fallback v7: chạy ydl.extract_info gốc
+                                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                                    info = ydl.extract_info(video.url, download=True)
+                                    filename = ydl.prepare_filename(info)
                     else:
                         # Fallback: dùng _proxy_guard() (rotator dùng chung)
                         with self._proxy_guard():
-                            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                                info = ydl.extract_info(video.url, download=True)
-                                filename = ydl.prepare_filename(info)
+                            if self._smart_dl is not None:
+                                # === v9: Smart retry — đổi IP NGAY khi timeout ===
+                                _smart_result = self._smart_dl.download_with_smart_retry(
+                                    url=video.url,
+                                    ydl_opts=ydl_opts,
+                                    progress_hook=_audio_progress_hook,
+                                )
+                                if not _smart_result['ok']:
+                                    raise RuntimeError(
+                                        f"SmartDownloader fail sau {_smart_result['attempts']} attempts: "
+                                        f"{_smart_result['last_error'][:200]}"
+                                    )
+                                info = _smart_result['info']
+                                filename = _smart_result['filename']
+                            else:
+                                # Fallback v7: chạy ydl.extract_info gốc
+                                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                                    info = ydl.extract_info(video.url, download=True)
+                                    filename = ydl.prepare_filename(info)
                     audio_path = Path(filename)
                     if not audio_path.exists() or audio_path.suffix not in (
                             ".wav", ".mp3", ".m4a", ".flac", ".opus", ".ogg",
@@ -4589,12 +4497,30 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                     err_str_dl = str(dl_err)
                     print(f"    [audio-ip] Download ERROR (attempt {dl_attempt}/{dl_retries}): {err_str_dl}", flush=True)
 
-                    # v7: Detect HTTP 500 trong exception message → cycle IP
+                    # v7: Detect HTTP 500 + Read timed out trong exception message → cycle IP
                     is_http_500 = (
                         "HTTP Error 500" in err_str_dl
                         or "HTTP Error 503" in err_str_dl
                         or "Internal Server Error" in err_str_dl
+                        or "Read timed out" in err_str_dl           # <-- MỚI: timeout
+                        or "HTTPSConnectionPool" in err_str_dl      # <-- MỚI: timeout
+                        or "ConnectionTimeout" in err_str_dl        # <-- MỚI: connect timeout
+                        or "Connection reset" in err_str_dl         # <-- MỚI: reset
+                        or "Connection aborted" in err_str_dl       # <-- MỚI: aborted
+                        or "ConnectionRefusedError" in err_str_dl   # <-- MỚI: refused
                     )
+                    # Nếu là timeout → tăng fragment_500_count (để trigger cycle IP)
+                    if ("Read timed out" in err_str_dl
+                        or "HTTPSConnectionPool" in err_str_dl
+                        or "ConnectionTimeout" in err_str_dl):
+                        # Trigger on_fragment_500 để tăng count + có thể trigger cycle IP
+                        try:
+                            self._http500_detector.on_fragment_500(
+                                frag_idx=-1,  # timeout không có frag idx
+                                total_frags=0,
+                            )
+                        except Exception:
+                            pass
                     http_500_count = self._http500_detector.fragment_500_count()
                     print(f"    [v7-detector] HTTP 500 count = {http_500_count}, "
                           f"is_http_500={is_http_500}", flush=True)
@@ -4673,14 +4599,6 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                         leftover.unlink()
                     except Exception:
                         pass
-
-            # === v8: SAU MỖI AUDIO DOWNLOAD MỚI → ROTATE IP RANDOM ===
-            # User yêu cầu: "sau mỗi lần tải audio mới lại đổi IP random".
-            # Mục đích: tránh dùng lại IP vừa download xong → giảm rate-limit.
-            print(f"  [v8-after-dl] Audio download DONE ({audio_filename}). "
-                  f"→ ROTATE IP random từ IP_foood.txt cho video tiếp theo.",
-                  flush=True)
-            self._ensure_random_ip(reason=f"after_download {video.video_id}")
 
             # === audio-only mode: skip transcribe + save JSON ===
             if audio_only:
@@ -4781,7 +4699,7 @@ YouTubeResearcher.process_videos_pipeline = _process_videos_pipeline
 def main():
     args = parse_args()
     print("=" * 80)
-    print("YOUTUBE AUDIO + SUBS RESUMABLE — VPN BẮT BUỘC — v8 (IP-FILE RANDOM)")
+    print("YOUTUBE AUDIO + SUBS RESUMABLE — VPN BẮT BUỘC")
     print("=" * 80)
 
     # Instance ID
@@ -4864,7 +4782,7 @@ def main():
     print(f"    → log: /tmp/openvpn-proton-{INSTANCE_ID}_subs.log")
     print(f"  • KHÔNG dùng pkill → an toàn chạy song song nhiều instance")
     print(f"\n=== v5 AUDIO IP CONTROLLER ===")
-    print(f"  • (v8) KHÔNG còn bắt đầu REAL mỗi video. IP được pick RANDOM từ file.")
+    print(f"  • Lần đầu LUÔN real IP (default route, KHÔNG qua VPN)")
     print(f"  • Đo tốc độ liên tục qua yt-dlp progress hook")
     print(f"  • Tốc độ < {args.audio_min_speed_mbps} MB/s → đổi IP")
     print(f"  • Cycle {args.audio_fake_before_real + 1}: "
@@ -4876,15 +4794,12 @@ def main():
     print(f"  • HTTP 500 threshold: {args.audio_500_threshold} fragments "
           f"→ cycle IP (REAL ↔ FAKE ↔ REAL)")
     print(f"  • Stall detection: bytes không tăng trong {args.audio_stall_seconds}s "
-          f"→ cycle IP")
+          f"→ cycle IP (fire mỗi {args.audio_stall_seconds}s khi vẫn stuck)")
+    print(f"\n=== v10 FORCE REAL AFTER N FAILS ===")
+    print(f"  • Force REAL sau {args.audio_force_real_after_fails} lần fail "
+          f"liên tiếp ở FAKE (ok=False) [0=tắt]")
     print(f"  • Giảm fragment_retries: ∞ → 5 (tránh retry vô tận trên IP chết)")
     print(f"  • Exponential backoff: 2^n giây, max 30s")
-    print(f"\n=== v8 IP FILE RANDOM ROTATOR ===")
-    print(f"  • IP file: {args.ip_file}")
-    print(f"  • BẮT ĐẦU MỖI VIDEO → chọn RANDOM 1 IP từ file → apply rotator")
-    print(f"  • SAU MỖI AUDIO DOWNLOAD → chọn RANDOM IP mới (khác IP vừa dùng)")
-    print(f"  • File format: 'server=<ovpn_filename>, ip=<public_ip>'")
-    print(f"  • KHÔNG còn state machine REAL/FAKE cố định như v7")
 
     # Run logger
     output_root = Path(args.output)
@@ -4933,8 +4848,7 @@ def main():
                 audio_speed_avg_window_seconds=args.audio_speed_avg_window_seconds,
                 audio_500_threshold=args.audio_500_threshold,         # v7
                 audio_stall_seconds=args.audio_stall_seconds,         # v7
-                ip_file=args.ip_file,                                 # v8
-                instance_id=INSTANCE_ID,                              # v8
+                audio_force_real_after_fails=args.audio_force_real_after_fails,  # v10
             )
         except Exception as e:
             print(f"  ERROR processing {ch_url}: {e}")

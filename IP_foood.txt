@@ -1,5 +1,0 @@
-server=ca-free-14.protonvpn.udp.ovpn, ip=118.70.190.141
-server=jp-free-3.protonvpn.udp.ovpn, ip=117.4.246.88
-server=sg-free-5.protonvpn.udp.ovpn, ip=149.88.23.104
-server=us-free-53.protonvpn.udp.ovpn, ip=146.70.174.67
-server=ca-free-19.protonvpn.udp.ovpn, ip=117.4.246.88
