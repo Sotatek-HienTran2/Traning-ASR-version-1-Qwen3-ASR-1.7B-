@@ -12,9 +12,9 @@ VIDEO_DELAY=8
 # Mỗi instance PHẢI có ID riêng để:
 #   - Tunnel của instance A không bị instance B kill nhầm.
 #   - Cleanup khi exit chỉ kill tunnel của đúng instance đó.
-# Có thể override bằng env var INSTANCE_ID hoặc argument thứ 1:
-#   ./run_crawl_v11.sh                    # auto: pid{os.getpid()}_t{time}
-#   INSTANCE_ID=inst_a ./run_crawl_v11.sh # dùng id cố định
+# Có thể override bằng env var INSTANCE_ID (mặc định: pid{os.getpid()}_t{time}):
+#   ./run_crawl_v11.sh                         # auto
+#   INSTANCE_ID=inst_a ./run_crawl_v11.sh      # dùng id cố định
 INSTANCE_ID="${INSTANCE_ID:-pid$$_t$(date +%s)}"
 
 # =============================================================================

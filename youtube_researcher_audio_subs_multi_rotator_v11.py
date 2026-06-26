@@ -97,6 +97,10 @@ except Exception as _v10e:
 
 load_dotenv(Path(__file__).parent / ".env")
 
+# v11: Module-level global cho INSTANCE_ID, dùng bởi main() và atexit handler.
+# Khởi tạo = None, sẽ được set trong main() khi parse args.
+INSTANCE_ID: Optional[str] = None
+
 # ================= VPN ROTATOR (BẮT BUỘC - OpenVPN) =================
 # Chỉ dùng ProtonVPN OpenVPN tunnel để fake IP.
 # - 5 server free (CA/MX/NL/SG/US/JP), rotate random theo --vpn-strategy
@@ -4321,11 +4325,9 @@ def _process_videos_pipeline(self, output_dir, run_timestamp="",
                         rotator.disconnect()
                     else:
                         # Fallback: gọi kill_tunnel_by_instance với INSTANCE_ID
-                        # (lấy từ args hoặc attribute của researcher).
-                        inst_id = getattr(self, '_instance_id', None) or \
-                                  getattr(self, 'instance_id', None)
-                        if inst_id:
-                            kill_tunnel_by_instance(inst_id)
+                        # (lấy từ global, set bởi main()).
+                        if INSTANCE_ID:
+                            kill_tunnel_by_instance(INSTANCE_ID)
             except Exception as e:
                 print(f"  [audio-ip] audio_rotator disconnect error (ignored): {e}",
                       flush=True)
@@ -4810,6 +4812,8 @@ def main():
     print("=" * 80)
 
     # Instance ID
+    # v11: Declare INSTANCE_ID as module-level global (khi gọi main() lần đầu)
+    # để các module khác (atexit handler, error fallback) có thể truy cập.
     global INSTANCE_ID
     INSTANCE_ID = args.instance_id or f"pid{os.getpid()}_t{int(time.time())}"
     print(f"[Multi-instance] Instance ID: {INSTANCE_ID}")
@@ -4824,6 +4828,10 @@ def main():
         def _v11_cleanup_tunnels():
             """atexit handler: kill tunnel của INSTANCE_ID khi process thoát."""
             try:
+                if not INSTANCE_ID:
+                    print(f"\n[v11-cleanup] INSTANCE_ID chưa set → skip cleanup",
+                          flush=True)
+                    return
                 print(f"\n[v11-cleanup] --cleanup-on-exit enabled → kill tunnel "
                       f"của instance={INSTANCE_ID}", flush=True)
                 killed = kill_tunnel_by_instance(INSTANCE_ID)
