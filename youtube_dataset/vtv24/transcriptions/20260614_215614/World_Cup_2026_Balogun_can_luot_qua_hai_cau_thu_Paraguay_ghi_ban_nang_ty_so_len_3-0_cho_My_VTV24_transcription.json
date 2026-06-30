@@ -1,0 +1,69 @@
+{
+  "audio_duration": 58.731,
+  "audio_path": "World_Cup_2026_Balogun_can_luot_qua_hai_cau_thu_Paraguay_ghi_ban_nang_ty_so_len_3-0_cho_My_VTV24.wav",
+  "video_id": "FEcrKOMRKGk",
+  "title": "World Cup 2026: Balogun càn lướt qua hai cầu thủ Paraguay ghi bàn nâng tỷ số lên 3-0 cho Mỹ | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=FEcrKOMRKGk",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.64,
+      "end": 27.359,
+      "speaker": "SPEAKER_00",
+      "text": "Adamsman đường chuyền cho baogan Bogan Bogan [la hét] Bogan và Bô 3-0 dành cho đội tuyển Mỹ 3-0 dành cho ba cầu thủ khác nhau."
+    },
+    {
+      "start": 27.359,
+      "end": 28.383,
+      "speaker": "SPEAKER_00",
+      "text": "Một người của Paraguay hai người cho đội tuyển Mỹ."
+    },
+    {
+      "start": 28.383,
+      "end": 34.07,
+      "speaker": "SPEAKER_00",
+      "text": "Một sự khởi đầu có thể nói là hoành tráng của đội chủ nhà FIFA World Cup 2026."
+    },
+    {
+      "start": 34.07,
+      "end": 43.719,
+      "speaker": "SPEAKER_00",
+      "text": "Cùng theo dõi lại tình huống kinh bàn của Balogan lập cố thứ hai của tiền đạo mang áo số 20 trong trận đấu ngày hôm nay."
+    },
+    {
+      "start": 43.719,
+      "end": 45.55,
+      "speaker": "SPEAKER_00",
+      "text": "Tuyệt vời."
+    },
+    {
+      "start": 45.55,
+      "end": 47.93,
+      "speaker": "SPEAKER_00",
+      "text": "Hai bàn thắng, hai phong cách khác nhau."
+    },
+    {
+      "start": 47.93,
+      "end": 59.44,
+      "speaker": "SPEAKER_00",
+      "text": "Bàn đầu tiên của Balogan là tình huống chọn vị trí chính xác và bàn thứ hai là khả năng can lướt tì đè."
+    },
+    {
+      "start": 59.44,
+      "end": 59.44,
+      "speaker": "SPEAKER_00",
+      "text": "am"
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

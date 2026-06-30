@@ -1,0 +1,105 @@
+{
+  "audio_duration": 58.645,
+  "audio_path": "World_Cup_2026_Vua_vao_san_Larin_go_hoa_cho_Canada_voi_pha_xu_ly_đang_cap_trong_vong_cam_VTV24.wav",
+  "video_id": "Z-vsMY-u03E",
+  "title": "World Cup 2026: Vừa vào sân, Larin gỡ hoà cho Canada với pha xử lý đẳng cấp trong vòng cấm | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=Z-vsMY-u03E",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.599,
+      "end": 8.017,
+      "speaker": "SPEAKER_00",
+      "text": "Không có điểm ở trận khai mạc ở giải đấu năm nay sẽ khiến cho tình yêu không đơn giản được thắp sáng."
+    },
+    {
+      "start": 8.017,
+      "end": 12.34,
+      "speaker": "SPEAKER_00",
+      "text": "Nhưng đó là một bàn thắng tuyệt vời và một khoảnh khắc rất cần thiết."
+    },
+    {
+      "start": 12.34,
+      "end": 22.88,
+      "speaker": "SPEAKER_00",
+      "text": "Và đó là Larin, huyện thoại bóng đá của Canada người đang có được số lượng bàn thắng nhiều nhất trong lịch sử của bóng đá quốc gia này."
+    },
+    {
+      "start": 22.88,
+      "end": 27.106,
+      "speaker": "SPEAKER_00",
+      "text": "Một khoảnh khắc lóe sáng cực kỳ tuyệt vời của Larin."
+    },
+    {
+      "start": 27.106,
+      "end": 29.52,
+      "speaker": "SPEAKER_00",
+      "text": "Chúng ta xem điều gì đã xảy ra."
+    },
+    {
+      "start": 29.52,
+      "end": 33.8,
+      "speaker": "SPEAKER_00",
+      "text": "Một tình huống lựng thức bên phía cánh trái."
+    },
+    {
+      "start": 33.8,
+      "end": 37.64,
+      "speaker": "SPEAKER_00",
+      "text": "Bất ngờ tăng tốc."
+    },
+    {
+      "start": 37.64,
+      "end": 36.42,
+      "speaker": "SPEAKER_00",
+      "text": "Bất ngờ tăng tốc."
+    },
+    {
+      "start": 36.42,
+      "end": 38.999,
+      "speaker": "SPEAKER_00",
+      "text": "Chạm nhịp 1-2."
+    },
+    {
+      "start": 38.999,
+      "end": 41.137,
+      "speaker": "SPEAKER_00",
+      "text": "Rích giặc không nguyệt vị."
+    },
+    {
+      "start": 41.137,
+      "end": 41.586,
+      "speaker": "SPEAKER_00",
+      "text": "Saarin đã không chưa bóng."
+    },
+    {
+      "start": 41.586,
+      "end": 45.968,
+      "speaker": "SPEAKER_00",
+      "text": "Có được một tình huống xử lý bóng quá hay."
+    },
+    {
+      "start": 45.968,
+      "end": 48.14,
+      "speaker": "SPEAKER_00",
+      "text": "Cực hẹp rồi."
+    },
+    {
+      "start": 48.14,
+      "end": 56.32,
+      "speaker": "SPEAKER_00",
+      "text": "bóng ăn hơi ra má ngoài một chút ở tình huống rất khó để đánh bại thủ thành Vas người C"
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

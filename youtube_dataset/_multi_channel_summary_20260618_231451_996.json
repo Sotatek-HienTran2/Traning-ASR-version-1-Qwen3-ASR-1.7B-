@@ -1,0 +1,70 @@
+{
+  "run_timestamp": "2026-06-18T23:20:41.874599",
+  "channels_file": "/tmp/test_channels_inst1.txt",
+  "total_channels": 1,
+  "success": 1,
+  "failed": 0,
+  "results": [
+    {
+      "channel": "https://www.youtube.com/@dunglailaptrinh",
+      "channel_name": "Dũng Lại Lập Trình",
+      "channel_folder": "dunglailaptrinh",
+      "status": "success",
+      "output": "youtube_dataset/dunglailaptrinh",
+      "run_timestamp": "20260618_231451",
+      "audio_dir": "audio/20260618_231451/",
+      "transcriptions_dir": "transcriptions/20260618_231451/",
+      "output_files": {
+        "research_json": "research_Dũng_Lại_Lập_Trình_20260618_231451.json",
+        "research_csv": "research_Dũng_Lại_Lập_Trình_20260618_231451.csv",
+        "segments_dataset_csv": "Dũng_Lại_Lập_Trình_segments_dataset_20260618_231451.csv",
+        "video_summary_csv": "Dũng_Lại_Lập_Trình_video_summary_20260618_231451.csv",
+        "pipeline_summary_json": "pipeline_summary_20260618_231451.json"
+      },
+      "audio_files": [
+        "Huong_dan_lam_website_đep_va_nhanh_voi_tro_ly_thiet_ke_AI_trong_7_phut.wav",
+        "Bai_hoc_ve_AI_Agent_tu_keynote_cua_CEO_Jensen_Huang_tai_NVIDIA_GTC2026_tai_Taipei_Đai_Loan.wav"
+      ],
+      "videos": [
+        {
+          "video_id": "gRYqlDwkWTM",
+          "title": "Hướng dẫn làm website đẹp và nhanh với trợ lý thiết kế AI trong 7 phút",
+          "status": "download_failed",
+          "audio_filename": "Huong_dan_lam_website_đep_va_nhanh_voi_tro_ly_thiet_ke_AI_trong_7_phut.wav",
+          "audio_downloaded_at": "2026-06-18T23:19:50.202950",
+          "error": "ERROR: [youtube] gRYqlDwkWTM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies"
+        },
+        {
+          "video_id": "h2sejMJa-LI",
+          "title": "Bài học về AI Agent từ keynote của CEO Jensen Huang tại NVIDIA GTC2026 tại Taipei Đài Loan",
+          "status": "transcript_unavailable",
+          "audio_filename": "Bai_hoc_ve_AI_Agent_tu_keynote_cua_CEO_Jensen_Huang_tai_NVIDIA_GTC2026_tai_Taipei_Đai_Loan.wav",
+          "audio_downloaded_at": "2026-06-18T23:20:41.736059",
+          "error": "no_youtube_subs"
+        }
+      ],
+      "summary": {
+        "total": 2,
+        "success": 0,
+        "results": [
+          {
+            "video_id": "gRYqlDwkWTM",
+            "title": "Hướng dẫn làm website đẹp và nhanh với trợ lý thiết kế AI trong 7 phút",
+            "status": "download_failed",
+            "audio_filename": "Huong_dan_lam_website_đep_va_nhanh_voi_tro_ly_thiet_ke_AI_trong_7_phut.wav",
+            "audio_downloaded_at": "2026-06-18T23:19:50.202950",
+            "error": "ERROR: [youtube] gRYqlDwkWTM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies"
+          },
+          {
+            "video_id": "h2sejMJa-LI",
+            "title": "Bài học về AI Agent từ keynote của CEO Jensen Huang tại NVIDIA GTC2026 tại Taipei Đài Loan",
+            "status": "transcript_unavailable",
+            "audio_filename": "Bai_hoc_ve_AI_Agent_tu_keynote_cua_CEO_Jensen_Huang_tai_NVIDIA_GTC2026_tai_Taipei_Đai_Loan.wav",
+            "audio_downloaded_at": "2026-06-18T23:20:41.736059",
+            "error": "no_youtube_subs"
+          }
+        ]
+      }
+    }
+  ]
+}

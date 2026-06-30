@@ -1,0 +1,14 @@
+{
+  "total": 1,
+  "success": 0,
+  "results": [
+    {
+      "video_id": "gRYqlDwkWTM",
+      "title": "Hướng dẫn làm website đẹp và nhanh với trợ lý thiết kế AI trong 7 phút",
+      "status": "transcript_unavailable",
+      "audio_filename": "Huong_dan_lam_website_đep_va_nhanh_voi_tro_ly_thiet_ke_AI_trong_7_phut.wav",
+      "audio_downloaded_at": "2026-06-18T23:27:14.314716",
+      "error": "no_youtube_subs"
+    }
+  ]
+}

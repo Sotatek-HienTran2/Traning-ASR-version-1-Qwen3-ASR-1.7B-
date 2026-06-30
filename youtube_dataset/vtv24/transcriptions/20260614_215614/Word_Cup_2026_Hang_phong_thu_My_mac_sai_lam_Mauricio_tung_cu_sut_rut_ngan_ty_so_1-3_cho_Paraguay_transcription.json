@@ -1,0 +1,63 @@
+{
+  "audio_duration": 51.776,
+  "audio_path": "Word_Cup_2026_Hang_phong_thu_My_mac_sai_lam_Mauricio_tung_cu_sut_rut_ngan_ty_so_1-3_cho_Paraguay.wav",
+  "video_id": "LPFWGkt9kQA",
+  "title": "Word Cup 2026: Hàng phòng thủ Mỹ mắc sai lầm, Mauricio tung cú sút rút ngắn tỷ số 1-3 cho Paraguay",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=LPFWGkt9kQA",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.719,
+      "end": 8.64,
+      "speaker": "SPEAKER_00",
+      "text": "để có thể cho thấy là Paragay có thể ghi bàn và làm nên một cuộc ngược dòng."
+    },
+    {
+      "start": 8.64,
+      "end": 18.011,
+      "speaker": "SPEAKER_00",
+      "text": "Amiron cơ hội ghi bàn cho Parag [la hét] [hò reo] Mauricio."
+    },
+    {
+      "start": 18.011,
+      "end": 26.48,
+      "speaker": "SPEAKER_00",
+      "text": "Một sự thay đổi người của Paraguay và anh đã lập công."
+    },
+    {
+      "start": 26.48,
+      "end": 31.279,
+      "speaker": "SPEAKER_00",
+      "text": "Đó là một điều bất ngờ mà Paragay tạo ra ngay sau khi đội tuyển Mỹ thay liền hai người."
+    },
+    {
+      "start": 31.279,
+      "end": 44.879,
+      "speaker": "SPEAKER_00",
+      "text": "Không có lỗi Việt vị ở tình huống này.Oio là người đã kiến tạo cho Mauricio."
+    },
+    {
+      "start": 44.879,
+      "end": 46.764,
+      "speaker": "SPEAKER_00",
+      "text": "Cú đá rất tin chân của Mauricio."
+    },
+    {
+      "start": 46.764,
+      "end": 48.079,
+      "speaker": "SPEAKER_00",
+      "text": "Còn đây là góc nhìn từ trọng tài."
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

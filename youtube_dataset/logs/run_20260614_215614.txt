@@ -1,0 +1,210 @@
+================================================================================
+RUN LOG - bat dau luc 2026-06-14T21:56:14.401328
+Log file: youtube_dataset/logs/run_20260614_215614.txt
+Script path: /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs.py
+Working dir : /home/hientran/Qwen3-ASR
+Python      : 3.11.15
+================================================================================
+
+
+================================================================================
+BATCH START
+================================================================================
+[21:56:14] Timestamp      : 2026-06-14T21:56:14.401400
+[21:56:14] Script path    : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs.py
+[21:56:14] Channels file  : /home/hientran/sythetic_crawl_data/channels_audio/channels_thoi_su_0.txt
+[21:56:14] Total channels : 1
+[21:56:14] Command        : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs.py --max-results 20000 --order date --no-fix --channels-file /home/hientran/sythetic_crawl_data/channels_audio/channels_thoi_su_0.txt --video-delay 10 --skip-existing
+[21:56:14] 
+
+================================================================================
+CHANNEL 1/1: https://www.youtube.com/@vtv24/videos
+================================================================================
+[21:56:14] Channel name    : vtv24
+[21:56:14] Run timestamp   : 20260614_215614
+[21:56:14] Output folder   : <output_root>/vtv24/
+[21:56:14] Trang thai      : BAT DAU xu ly kenh
+[21:56:14] Fetching videos (max_results=20000, max_fetch=20000, order=date, use_rss=False, batch_size=50, socket_timeout=20s, video_delay=10s, fetch_delay=5s, max_retries=3)
+[21:59:43] Tim thay 50 video tu kenh
+[21:59:43] Sau filter: 49/50 video
+[22:01:39] Bat dau pipeline (YouTube transcript)
+[22:01:39] Pipeline partition (total=49):
+[22:01:39]   Bucket A (audio+json da co, SKIP)         : 0
+[22:01:39]   Bucket B (co audio, chua co json)         : 0
+[22:01:39]   Bucket C (chua co audio, can download)   : 49
+[22:01:39] [C-1/49] V5xkxDPaN2o | Lớp học hè đặc biệt của trẻ em miền di sản | VTV24 -> download + transcribe
+[22:01:45] [C-1/49] V5xkxDPaN2o | DONE (22 seg, lang=Tiếng VI-ORIG, audio: Lop_hoc_he_đac_biet_cua_tre_em_mien_di_san_VTV24.wav)
+[22:01:45] [C-2/49] YD97qZi28KA | Kinh nghiệm cắm trại an toàn | VTV24 -> download + transcribe
+[22:02:01] [C-2/49] YD97qZi28KA | DONE (25 seg, lang=Tiếng VI-ORIG, audio: Kinh_nghiem_cam_trai_an_toan_VTV24.wav)
+[22:02:01] [C-3/49] U4hJ2BrmKoA | Đẩy mạnh chi trả lương hưu qua tài khoản ngân hàng -> download + transcribe
+[22:02:17] [C-3/49] U4hJ2BrmKoA | DONE (20 seg, lang=Tiếng VI-ORIG, audio: Đay_manh_chi_tra_luong_huu_qua_tai_khoan_ngan_hang_VTV24.wav)
+[22:02:17] [C-4/49] JbRMI3Lltyw | Thủ môn Yassine Bounou xuất sắc giúp Morocco giữ l -> download + transcribe
+[22:02:33] [C-4/49] JbRMI3Lltyw | DONE (9 seg, lang=Tiếng VI-ORIG, audio: Thu_mon_Yassine_Bounou_xuat_sac_giup_Morocco_giu_lai_1_điem_truoc_Brazil_World_Cup_2026_VTV24.wav)
+[22:02:33] [C-5/49] xbHb2qAK8fQ | Cơn sốt du lịch làm đẹp | VTV24 -> download + transcribe
+[22:02:49] [C-5/49] xbHb2qAK8fQ | DONE (20 seg, lang=Tiếng VI-ORIG, audio: Con_sot_du_lich_lam_đep_VTV24.wav)
+[22:02:49] [C-6/49] Q_JBa0jMSJE | Saibari lốp bóng một chạm, ghi bàn giúp Morocco dẫ -> download + transcribe
+[22:03:06] [C-6/49] Q_JBa0jMSJE | DONE (8 seg, lang=Tiếng VI-ORIG, audio: Saibari_lop_bong_mot_cham_ghi_ban_giup_Morocco_dan_truoc_Brazil_World_Cup_2026_VTV24.wav)
+[22:03:06] [C-7/49] F-Ofow1Bu_o | Hoắc Thành - Thủ phủ hoa oải hương của Trung Quốc  -> download + transcribe
+[22:03:22] [C-7/49] F-Ofow1Bu_o | DONE (37 seg, lang=Tiếng VI-ORIG, audio: Hoac_Thanh_-_Thu_phu_hoa_oai_huong_cua_Trung_Quoc_VTV24.wav)
+[22:03:22] [C-8/49] qQbMq9-7Dro | Bàn thắng đẳng cấp của Vinicius vào lưới Morocco | -> download + transcribe
+[22:03:38] [C-8/49] qQbMq9-7Dro | DONE (12 seg, lang=Tiếng VI-ORIG, audio: Ban_thang_đang_cap_cua_Vinicius_vao_luoi_Morocco_World_Cup_2026_VTV24.wav)
+[22:03:38] [C-9/49] pLwUjIA5usA | Highlights World Cup 2026: Qatar – Thụy Sĩ | Đòn t -> download + transcribe
+[22:03:53] [C-9/49] pLwUjIA5usA | DONE (16 seg, lang=Tiếng VI-ORIG, audio: Highlights_World_Cup_2026_Qatar_Thuy_Si_Đon_trung_phat_phut_90_4_điem_so_lich_su_VTV24.wav)
+[22:03:53] [C-10/49] U1HLXn_-Be0 | Chuyển động ngày 14/6: Tư duy ‘sao chép’ không còn -> download + transcribe
+[22:04:14] [C-10/49] U1HLXn_-Be0 | DONE (199 seg, lang=Tiếng VI-ORIG, audio: Chuyen_đong_ngay_14_6_Tu_duy_sao_chep_khong_con_de_thoat_hiem_VTV24.wav)
+[22:04:14] [C-11/49] aA3qShylGcw | Hà Nội: Nguy cơ bùng phát sốt xuất huyết | VTV24 -> download + transcribe
+[22:04:30] [C-11/49] aA3qShylGcw | DONE (26 seg, lang=Tiếng VI-ORIG, audio: Ha_Noi_Nguy_co_bung_phat_sot_xuat_huyet_VTV24.wav)
+[22:04:30] [C-12/49] mvJWrb9MFiw | World Cup 2026: Qatar – Thụy Sĩ | Var – Penalty gâ -> download + transcribe
+[22:04:47] [C-12/49] mvJWrb9MFiw | DONE (15 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Qatar_Thuy_Si_Var_Penalty_gay_tranh_cai_VTV24.wav)
+[22:04:47] [C-13/49] ND5UDKoyR-8 | World Cup 2026: Qatar – Thụy Sĩ | Bàn thắng phút b -> download + transcribe
+[22:05:03] [C-13/49] ND5UDKoyR-8 | DONE (9 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Qatar_Thuy_Si_Ban_thang_phut_bu_gio_cuoi_cung_VTV24.wav)
+[22:05:03] [C-14/49] E9ui_Mg-IQo | Cảnh báo cháy rừng hiệu quả với hệ thống camera A. -> download + transcribe
+[22:05:28] [C-14/49] E9ui_Mg-IQo | DONE (20 seg, lang=Tiếng VI-ORIG, audio: Canh_bao_chay_rung_hieu_qua_voi_he_thong_camera_A_I_VTV24.wav)
+[22:05:28] [C-15/49] 7w2o-pPW_Ck | TSTC trưa 14/6: Điều tra giao dịch gian lận liên q -> download + transcribe
+[22:05:48] [C-15/49] 7w2o-pPW_Ck | DONE (227 seg, lang=Tiếng VI-ORIG, audio: TSTC_trua_14_6_Đieu_tra_giao_dich_gian_lan_lien_quan_đen_CHATGPT_PRO_VTV24.wav)
+[22:05:48] [C-16/49] xwqvX1Z-A9I | Tăng mạnh lượng khách du lịch dùng phương tiện côn -> download + transcribe
+[22:06:04] [C-16/49] xwqvX1Z-A9I | DONE (21 seg, lang=Tiếng VI-ORIG, audio: Tang_manh_luong_khach_du_lich_dung_phuong_tien_cong_cong_VTV24.wav)
+[22:06:04] [C-17/49] RK2HDazyPmM | Trân trọng ký ức lịch sử | VTV24 -> download + transcribe
+[22:06:20] [C-17/49] RK2HDazyPmM | DONE (26 seg, lang=Tiếng VI-ORIG, audio: Tran_trong_ky_uc_lich_su_VTV24.wav)
+[22:06:20] [C-18/49] pCzdD67gNi0 | Cho đi để sự sống ở lại | VTV24 -> download + transcribe
+[22:06:36] [C-18/49] pCzdD67gNi0 | DONE (16 seg, lang=Tiếng VI-ORIG, audio: Cho_đi_đe_su_song_o_lai_VTV24.wav)
+[22:06:36] [C-19/49] f9mwQVmMTaI | Quảng Ngãi: Bắt đầu khai quật tìm mộ Liệt sĩ tập t -> download + transcribe
+[22:06:52] [C-19/49] f9mwQVmMTaI | DONE (20 seg, lang=Tiếng VI-ORIG, audio: Quang_Ngai_Bat_đau_khai_quat_tim_mo_Liet_si_tap_the_VTV24.wav)
+[22:06:52] [C-20/49] bzTZvMIL0kA | Thế giới toàn cảnh 14/6: Lạm phát tăng tại một số  -> download + transcribe
+[22:07:10] [C-20/49] bzTZvMIL0kA | DONE (86 seg, lang=Tiếng VI-ORIG, audio: The_gioi_toan_canh_14_6_Lam_phat_tang_tai_mot_so_nen_kinh_te_chau_Au_VTV24.wav)
+[22:07:10] [C-21/49] 6GoP73xnwD4 | Lỗ hổng quản lý để khai thác cát trái phép | VTV24 -> download + transcribe
+[22:07:26] [C-21/49] 6GoP73xnwD4 | DONE (35 seg, lang=Tiếng VI-ORIG, audio: Lo_hong_quan_ly_đe_khai_thac_cat_trai_phep_VTV24.wav)
+[22:07:26] [C-22/49] Wf4WzSmzsVk | Thời tiết ngày 14/6: Bắc Bộ, cao nguyên Trung Bộ v -> download + transcribe
+[22:07:42] [C-22/49] Wf4WzSmzsVk | DONE (30 seg, lang=Tiếng VI-ORIG, audio: Thoi_tiet_ngay_14_6_Bac_Bo_cao_nguyen_Trung_Bo_va_Nam_Bo_chieu_toi_mua_giong_VTV24.wav)
+[22:07:42] [C-23/49] 5OYwq-wsN6Q | Xem quá nhiều video ngắn, bạn có thể bị "não bỏng  -> download + transcribe
+[22:08:00] [C-23/49] 5OYwq-wsN6Q | DONE (69 seg, lang=Tiếng VI-ORIG, audio: Xem_qua_nhieu_video_ngan_ban_co_the_bi_nao_bong_ngo_VTV24.wav)
+[22:08:00] [C-24/49] qrAtDabMbzk | Dữ liệu ADN: Hy vọng của những cuộc đoàn tụ | VTV2 -> download + transcribe
+[22:08:26] [C-24/49] qrAtDabMbzk | DONE (28 seg, lang=Tiếng VI-ORIG, audio: Du_lieu_ADN_Hy_vong_cua_nhung_cuoc_đoan_tu_VTV24.wav)
+[22:08:26] [C-25/49] jUe0rYvXYCg | Xe máy chở thuốc lá lậu, "hung thần" trên quốc lộ  -> download + transcribe
+[22:08:42] [C-25/49] jUe0rYvXYCg | DONE (15 seg, lang=Tiếng VI-ORIG, audio: Xe_may_cho_thuoc_la_lau_hung_than_tren_quoc_lo_VTV24.wav)
+[22:08:42] [C-26/49] REPupWjudPQ | World Cup 2026: Reyna dứt điểm điệu nghệ, ấn định  -> download + transcribe
+[22:08:59] [C-26/49] REPupWjudPQ | DONE (7 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Reyna_dut_điem_đieu_nghe_an_đinh_chien_thang_4-1_cua_My_truoc_Paraguay_VTV24.wav)
+[22:08:59] [C-27/49] LPFWGkt9kQA | Word Cup 2026: Hàng phòng thủ Mỹ mắc sai lầm, Maur -> download + transcribe
+[22:09:14] [C-27/49] LPFWGkt9kQA | DONE (7 seg, lang=Tiếng VI-ORIG, audio: Word_Cup_2026_Hang_phong_thu_My_mac_sai_lam_Mauricio_tung_cu_sut_rut_ngan_ty_so_1-3_cho_Paraguay.wav)
+[22:09:14] [C-28/49] FEcrKOMRKGk | World Cup 2026: Balogun càn lướt qua hai cầu thủ P -> download + transcribe
+[22:09:30] [C-28/49] FEcrKOMRKGk | DONE (8 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Balogun_can_luot_qua_hai_cau_thu_Paraguay_ghi_ban_nang_ty_so_len_3-0_cho_My_VTV24.wav)
+[22:09:30] [C-29/49] gmZiE4KSEoY | World Cup 2026: Balogun ghi bàn, Mỹ dẫn trước Para -> download + transcribe
+[22:09:47] [C-29/49] gmZiE4KSEoY | DONE (7 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Balogun_ghi_ban_My_dan_truoc_Paraguay_2_-_0_VTV24.wav)
+[22:09:47] [C-30/49] AN4TdnqkSPY | Bàn phản lưới đầu tiên của World Cup 2026 trong tr -> download + transcribe
+[22:10:03] [C-30/49] AN4TdnqkSPY | DONE (6 seg, lang=Tiếng VI-ORIG, audio: Ban_phan_luoi_đau_tien_cua_World_Cup_2026_trong_tran_My_vs_Paraquay_VTV24.wav)
+[22:10:03] [C-31/49] rZkw2_51i4o | Thời sự toàn cảnh ngày 13/6: Bắt nhóm người lập "đ -> download + transcribe
+[22:10:23] [C-31/49] rZkw2_51i4o | DONE (313 seg, lang=Tiếng VI-ORIG, audio: Thoi_su_toan_canh_ngay_13_6_Bat_nhom_nguoi_lap_đai_ban_doanh_lua_đao_tai_TP_Ho_Chi_Minh_VTV24.wav)
+[22:10:23] [C-32/49] ziTFS8XxS_Q | Mỹ tiêu diệt trùm băng đảng khét tiếng tại Venezue -> download + transcribe
+[22:10:51] [C-32/49] ziTFS8XxS_Q | DONE (79 seg, lang=Tiếng VI-ORIG, audio: My_tieu_diet_trum_bang_đang_khet_tieng_tai_Venezuela_Cum_tin_VTV24.wav)
+[22:10:51] [C-33/49] tOwUT1hl6Oo | World Cup đã trở nên “chặt chém” như thế nào sau 2 -> download + transcribe
+[22:11:09] [C-33/49] tOwUT1hl6Oo | DONE (249 seg, lang=Tiếng VI-ORIG, audio: World_Cup_đa_tro_nen_chat_chem_nhu_the_nao_sau_20_nam_VTV24.wav)
+[22:11:09] [C-34/49] hJMrqTOQh34 | Cận cảnh quá trình đại tu tăng hạn tiêm kích Su-30 -> download + transcribe
+[22:11:26] [C-34/49] hJMrqTOQh34 | DONE (56 seg, lang=Tiếng VI-ORIG, audio: Can_canh_qua_trinh_đai_tu_tang_han_tiem_kich_Su-30MK2_ngay_tai_Viet_Nam_VTV24.wav)
+[22:11:26] [C-35/49] IVQ5_3kd3Hg | Chuyển động 24h ngày 13/6: Việt Nam làm chủ công n -> download + transcribe
+[22:11:47] [C-35/49] IVQ5_3kd3Hg | DONE (213 seg, lang=Tiếng VI-ORIG, audio: Chuyen_đong_24h_ngay_13_6_Viet_Nam_lam_chu_cong_nghe_đai_tu_tiem_kich_Su-30MK2_VTV24.wav)
+[22:11:47] [C-36/49] 3UNrkEYdOZo | World Cup 2026: Bosnia & Herzegovina thoát thua ở  -> download + transcribe
+[22:12:04] [C-36/49] 3UNrkEYdOZo | DONE (6 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Bosnia_Herzegovina_thoat_thua_o_nhung_phut_bu_gio_cuoi_cung_VTV24.wav)
+[22:12:04] [C-37/49] Z-vsMY-u03E | World Cup 2026: Vừa vào sân, Larin gỡ hoà cho Cana -> download + transcribe
+[22:12:20] [C-37/49] Z-vsMY-u03E | DONE (14 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Vua_vao_san_Larin_go_hoa_cho_Canada_voi_pha_xu_ly_đang_cap_trong_vong_cam_VTV24.wav)
+[22:12:20] [C-38/49] h146ijFCOJ4 | World Cup 2026: Hậu vệ Sead Kolasinac có tình huốn -> download + transcribe
+[22:12:35] [C-38/49] h146ijFCOJ4 | DONE (10 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Hau_ve_Sead_Kolasinac_co_tinh_huong_pha_bong_ngay_tren_vach_voi_VTV24.wav)
+[22:12:35] [C-39/49] 8oaKcQAKEDo | World Cup 2026: Jovo Lukic đánh đầu ghi bàn mở tỉ  -> download + transcribe
+[22:12:52] [C-39/49] 8oaKcQAKEDo | DONE (12 seg, lang=Tiếng VI-ORIG, audio: World_Cup_2026_Jovo_Lukic_đanh_đau_ghi_ban_mo_ti_so_sau_tinh_huong_phat_goc_VTV24.wav)
+[22:12:52] [C-40/49] JHp3pZuLCEM | Khởi tố các đối tượng buôn bán hơn 15 tấn yến giả, -> download + transcribe
+[22:13:08] [C-40/49] JHp3pZuLCEM | DONE (24 seg, lang=Tiếng VI-ORIG, audio: Khoi_to_cac_đoi_tuong_buon_ban_hon_15_tan_yen_gia_quang_cao_chua_70_to_yen_Cum_tin_VTV24.wav)
+[22:13:08] [C-41/49] 0BJMIWJEWX8 | Ông trùm lừa đảo Nhật Bản chính thức bị bắt | VTV2 -> download + transcribe
+[22:13:25] [C-41/49] 0BJMIWJEWX8 | DONE (51 seg, lang=Tiếng VI-ORIG, audio: Ong_trum_lua_đao_Nhat_Ban_chinh_thuc_bi_bat_VTV24.wav)
+[22:13:25] [C-42/49] aqeC5eAfmOs | Mỹ yêu cầu Anthropic ngăn người nước ngoài truy cậ -> download + transcribe
+[22:13:41] [C-42/49] aqeC5eAfmOs | DONE (41 seg, lang=Tiếng VI-ORIG, audio: My_yeu_cau_Anthropic_ngan_nguoi_nuoc_ngoai_truy_cap_cac_mo_hinh_A_I_Cum_tin_VTV24.wav)
+[22:13:41] [C-43/49] QzYTpBDRxso | Câu chuyện về phóng viên quốc tế tác nghiệp tại lễ -> download + transcribe
+[22:13:58] [C-43/49] QzYTpBDRxso | DONE (18 seg, lang=Tiếng VI-ORIG, audio: Cau_chuyen_ve_phong_vien_quoc_te_tac_nghiep_tai_le_khai_mac_World_Cup_2026_VTV24.wav)
+[22:13:58] [C-44/49] ryLqor0qpZ0 | Thời sự toàn cảnh trưa 13/6: Công ước quốc tế bảo  -> download + transcribe
+[22:14:18] [C-44/49] ryLqor0qpZ0 | DONE (219 seg, lang=Tiếng VI-ORIG, audio: Thoi_su_toan_canh_trua_13_6_Cong_uoc_quoc_te_bao_ve_nguoi_lao_đong_tren_nen_tang_so_VTV24.wav)
+[22:14:18] [C-45/49] WnEyFDZ2rZI | Vụ 81 người ngộ độc ở trường tiểu học tại Đồng Thá -> download + transcribe
+[22:14:34] [C-45/49] WnEyFDZ2rZI | DONE (50 seg, lang=Tiếng VI-ORIG, audio: Vu_81_nguoi_ngo_đoc_o_truong_tieu_hoc_tai_Đong_Thap_Phat_hien_thuc_an_nhiem_khuan_Cum_tin_VTV24.wav)
+[22:14:34] [C-46/49] wGledY57piw | Bộ Công an đề xuất: Người bán thực phẩm trên mạng  -> download + transcribe
+[22:14:50] [C-46/49] wGledY57piw | DONE (67 seg, lang=Tiếng VI-ORIG, audio: Bo_Cong_an_đe_xuat_Nguoi_ban_thuc_pham_tren_mang_xa_hoi_phai_xac_thuc_danh_tinh_VTV24.wav)
+[22:14:50] [C-47/49] C4RIDM551Xk | Thế giới toàn cảnh ngày 13/6: Tỷ phú nghìn tỷ USD  -> download + transcribe
+[22:15:07] [C-47/49] C4RIDM551Xk | DONE (113 seg, lang=Tiếng VI-ORIG, audio: The_gioi_toan_canh_ngay_13_6_Ty_phu_nghin_ty_USD_đau_tien_tren_the_gioi_VTV24.wav)
+[22:15:07] [C-48/49] Qw4ZJfJK70k | Thời tiết ngày 13/6: Bắc Bộ và Trung Bộ tiếp tục n -> download + transcribe
+[22:15:23] [C-48/49] Qw4ZJfJK70k | DONE (30 seg, lang=Tiếng VI-ORIG, audio: Thoi_tiet_ngay_13_6_Bac_Bo_va_Trung_Bo_tiep_tuc_nang_nong_phia_Nam_co_mua_giong_vao_chieu.wav)
+[22:15:23] [C-49/49] HLub2-kmYqg | HIGHLIGHTS Hàn Quốc 2-1 CH Czech: Hwang In-beom rự -> download + transcribe
+[22:15:40] [C-49/49] HLub2-kmYqg | DONE (21 seg, lang=Tiếng VI-ORIG, audio: HIGHLIGHTS_Han_Quoc_2-1_CH_Czech_Hwang_In-beom_ruc_sang_giup_Manh_ho_nguoc_dong_World_Cup_2026.wav)
+[22:15:40] 
+Pipeline channel 1/1: 49 success, 0 skipped, 0 failed (tong: 49)
+[22:15:40] 
+[22:15:40] Trang thai cuoi : success
+[22:15:40] Video processed : 49 (success: 49, failed/skipped: 0)
+[22:15:40] 
+[22:15:40] Chi tiet 49 video trong kenh:
+[22:15:40]   - [success                  ] V5xkxDPaN2o | Lớp học hè đặc biệt của trẻ em miền di sản | VTV24 | audio: Lop_hoc_he_đac_biet_cua_tre_em_mien_di_san_VTV24.wav | json: Lop_hoc_he_đac_biet_cua_tre_em_mien_di_san_VTV24_transcription.json
+[22:15:40]   - [success                  ] YD97qZi28KA | Kinh nghiệm cắm trại an toàn | VTV24               | audio: Kinh_nghiem_cam_trai_an_toan_VTV24.wav | json: Kinh_nghiem_cam_trai_an_toan_VTV24_transcription.json
+[22:15:40]   - [success                  ] U4hJ2BrmKoA | Đẩy mạnh chi trả lương hưu qua tài khoản ngân hàng | audio: Đay_manh_chi_tra_luong_huu_qua_tai_khoan_ngan_hang_VTV24.wav | json: Đay_manh_chi_tra_luong_huu_qua_tai_khoan_ngan_hang_VTV24_transcription.json
+[22:15:40]   - [success                  ] JbRMI3Lltyw | Thủ môn Yassine Bounou xuất sắc giúp Morocco giữ l | audio: Thu_mon_Yassine_Bounou_xuat_sac_giup_Morocco_giu_lai_1_điem_truoc_Brazil_World_Cup_2026_VTV24.wav | json: Thu_mon_Yassine_Bounou_xuat_sac_giup_Morocco_giu_lai_1_điem_truoc_Brazil_World_Cup_2026_VTV24_transcription.json
+[22:15:40]   - [success                  ] xbHb2qAK8fQ | Cơn sốt du lịch làm đẹp | VTV24                    | audio: Con_sot_du_lich_lam_đep_VTV24.wav | json: Con_sot_du_lich_lam_đep_VTV24_transcription.json
+[22:15:40]   - [success                  ] Q_JBa0jMSJE | Saibari lốp bóng một chạm, ghi bàn giúp Morocco dẫ | audio: Saibari_lop_bong_mot_cham_ghi_ban_giup_Morocco_dan_truoc_Brazil_World_Cup_2026_VTV24.wav | json: Saibari_lop_bong_mot_cham_ghi_ban_giup_Morocco_dan_truoc_Brazil_World_Cup_2026_VTV24_transcription.json
+[22:15:40]   - [success                  ] F-Ofow1Bu_o | Hoắc Thành - Thủ phủ hoa oải hương của Trung Quốc  | audio: Hoac_Thanh_-_Thu_phu_hoa_oai_huong_cua_Trung_Quoc_VTV24.wav | json: Hoac_Thanh_-_Thu_phu_hoa_oai_huong_cua_Trung_Quoc_VTV24_transcription.json
+[22:15:40]   - [success                  ] qQbMq9-7Dro | Bàn thắng đẳng cấp của Vinicius vào lưới Morocco | | audio: Ban_thang_đang_cap_cua_Vinicius_vao_luoi_Morocco_World_Cup_2026_VTV24.wav | json: Ban_thang_đang_cap_cua_Vinicius_vao_luoi_Morocco_World_Cup_2026_VTV24_transcription.json
+[22:15:40]   - [success                  ] pLwUjIA5usA | Highlights World Cup 2026: Qatar – Thụy Sĩ | Đòn t | audio: Highlights_World_Cup_2026_Qatar_Thuy_Si_Đon_trung_phat_phut_90_4_điem_so_lich_su_VTV24.wav | json: Highlights_World_Cup_2026_Qatar_Thuy_Si_Đon_trung_phat_phut_90_4_điem_so_lich_su_VTV24_transcription.json
+[22:15:40]   - [success                  ] U1HLXn_-Be0 | Chuyển động ngày 14/6: Tư duy ‘sao chép’ không còn | audio: Chuyen_đong_ngay_14_6_Tu_duy_sao_chep_khong_con_de_thoat_hiem_VTV24.wav | json: Chuyen_đong_ngay_14_6_Tu_duy_sao_chep_khong_con_de_thoat_hiem_VTV24_transcription.json
+[22:15:40]   - [success                  ] aA3qShylGcw | Hà Nội: Nguy cơ bùng phát sốt xuất huyết | VTV24   | audio: Ha_Noi_Nguy_co_bung_phat_sot_xuat_huyet_VTV24.wav | json: Ha_Noi_Nguy_co_bung_phat_sot_xuat_huyet_VTV24_transcription.json
+[22:15:40]   - [success                  ] mvJWrb9MFiw | World Cup 2026: Qatar – Thụy Sĩ | Var – Penalty gâ | audio: World_Cup_2026_Qatar_Thuy_Si_Var_Penalty_gay_tranh_cai_VTV24.wav | json: World_Cup_2026_Qatar_Thuy_Si_Var_Penalty_gay_tranh_cai_VTV24_transcription.json
+[22:15:40]   - [success                  ] ND5UDKoyR-8 | World Cup 2026: Qatar – Thụy Sĩ | Bàn thắng phút b | audio: World_Cup_2026_Qatar_Thuy_Si_Ban_thang_phut_bu_gio_cuoi_cung_VTV24.wav | json: World_Cup_2026_Qatar_Thuy_Si_Ban_thang_phut_bu_gio_cuoi_cung_VTV24_transcription.json
+[22:15:40]   - [success                  ] E9ui_Mg-IQo | Cảnh báo cháy rừng hiệu quả với hệ thống camera A. | audio: Canh_bao_chay_rung_hieu_qua_voi_he_thong_camera_A_I_VTV24.wav | json: Canh_bao_chay_rung_hieu_qua_voi_he_thong_camera_A_I_VTV24_transcription.json
+[22:15:40]   - [success                  ] 7w2o-pPW_Ck | TSTC trưa 14/6: Điều tra giao dịch gian lận liên q | audio: TSTC_trua_14_6_Đieu_tra_giao_dich_gian_lan_lien_quan_đen_CHATGPT_PRO_VTV24.wav | json: TSTC_trua_14_6_Đieu_tra_giao_dich_gian_lan_lien_quan_đen_CHATGPT_PRO_VTV24_transcription.json
+[22:15:40]   - [success                  ] xwqvX1Z-A9I | Tăng mạnh lượng khách du lịch dùng phương tiện côn | audio: Tang_manh_luong_khach_du_lich_dung_phuong_tien_cong_cong_VTV24.wav | json: Tang_manh_luong_khach_du_lich_dung_phuong_tien_cong_cong_VTV24_transcription.json
+[22:15:40]   - [success                  ] RK2HDazyPmM | Trân trọng ký ức lịch sử | VTV24                   | audio: Tran_trong_ky_uc_lich_su_VTV24.wav | json: Tran_trong_ky_uc_lich_su_VTV24_transcription.json
+[22:15:40]   - [success                  ] pCzdD67gNi0 | Cho đi để sự sống ở lại | VTV24                    | audio: Cho_đi_đe_su_song_o_lai_VTV24.wav | json: Cho_đi_đe_su_song_o_lai_VTV24_transcription.json
+[22:15:40]   - [success                  ] f9mwQVmMTaI | Quảng Ngãi: Bắt đầu khai quật tìm mộ Liệt sĩ tập t | audio: Quang_Ngai_Bat_đau_khai_quat_tim_mo_Liet_si_tap_the_VTV24.wav | json: Quang_Ngai_Bat_đau_khai_quat_tim_mo_Liet_si_tap_the_VTV24_transcription.json
+[22:15:40]   - [success                  ] bzTZvMIL0kA | Thế giới toàn cảnh 14/6: Lạm phát tăng tại một số  | audio: The_gioi_toan_canh_14_6_Lam_phat_tang_tai_mot_so_nen_kinh_te_chau_Au_VTV24.wav | json: The_gioi_toan_canh_14_6_Lam_phat_tang_tai_mot_so_nen_kinh_te_chau_Au_VTV24_transcription.json
+[22:15:40]   - [success                  ] 6GoP73xnwD4 | Lỗ hổng quản lý để khai thác cát trái phép | VTV24 | audio: Lo_hong_quan_ly_đe_khai_thac_cat_trai_phep_VTV24.wav | json: Lo_hong_quan_ly_đe_khai_thac_cat_trai_phep_VTV24_transcription.json
+[22:15:40]   - [success                  ] Wf4WzSmzsVk | Thời tiết ngày 14/6: Bắc Bộ, cao nguyên Trung Bộ v | audio: Thoi_tiet_ngay_14_6_Bac_Bo_cao_nguyen_Trung_Bo_va_Nam_Bo_chieu_toi_mua_giong_VTV24.wav | json: Thoi_tiet_ngay_14_6_Bac_Bo_cao_nguyen_Trung_Bo_va_Nam_Bo_chieu_toi_mua_giong_VTV24_transcription.json
+[22:15:40]   - [success                  ] 5OYwq-wsN6Q | Xem quá nhiều video ngắn, bạn có thể bị "não bỏng  | audio: Xem_qua_nhieu_video_ngan_ban_co_the_bi_nao_bong_ngo_VTV24.wav | json: Xem_qua_nhieu_video_ngan_ban_co_the_bi_nao_bong_ngo_VTV24_transcription.json
+[22:15:40]   - [success                  ] qrAtDabMbzk | Dữ liệu ADN: Hy vọng của những cuộc đoàn tụ | VTV2 | audio: Du_lieu_ADN_Hy_vong_cua_nhung_cuoc_đoan_tu_VTV24.wav | json: Du_lieu_ADN_Hy_vong_cua_nhung_cuoc_đoan_tu_VTV24_transcription.json
+[22:15:40]   - [success                  ] jUe0rYvXYCg | Xe máy chở thuốc lá lậu, "hung thần" trên quốc lộ  | audio: Xe_may_cho_thuoc_la_lau_hung_than_tren_quoc_lo_VTV24.wav | json: Xe_may_cho_thuoc_la_lau_hung_than_tren_quoc_lo_VTV24_transcription.json
+[22:15:40]   - [success                  ] REPupWjudPQ | World Cup 2026: Reyna dứt điểm điệu nghệ, ấn định  | audio: World_Cup_2026_Reyna_dut_điem_đieu_nghe_an_đinh_chien_thang_4-1_cua_My_truoc_Paraguay_VTV24.wav | json: World_Cup_2026_Reyna_dut_điem_đieu_nghe_an_đinh_chien_thang_4-1_cua_My_truoc_Paraguay_VTV24_transcription.json
+[22:15:40]   - [success                  ] LPFWGkt9kQA | Word Cup 2026: Hàng phòng thủ Mỹ mắc sai lầm, Maur | audio: Word_Cup_2026_Hang_phong_thu_My_mac_sai_lam_Mauricio_tung_cu_sut_rut_ngan_ty_so_1-3_cho_Paraguay.wav | json: Word_Cup_2026_Hang_phong_thu_My_mac_sai_lam_Mauricio_tung_cu_sut_rut_ngan_ty_so_1-3_cho_Paraguay_transcription.json
+[22:15:40]   - [success                  ] FEcrKOMRKGk | World Cup 2026: Balogun càn lướt qua hai cầu thủ P | audio: World_Cup_2026_Balogun_can_luot_qua_hai_cau_thu_Paraguay_ghi_ban_nang_ty_so_len_3-0_cho_My_VTV24.wav | json: World_Cup_2026_Balogun_can_luot_qua_hai_cau_thu_Paraguay_ghi_ban_nang_ty_so_len_3-0_cho_My_VTV24_transcription.json
+[22:15:40]   - [success                  ] gmZiE4KSEoY | World Cup 2026: Balogun ghi bàn, Mỹ dẫn trước Para | audio: World_Cup_2026_Balogun_ghi_ban_My_dan_truoc_Paraguay_2_-_0_VTV24.wav | json: World_Cup_2026_Balogun_ghi_ban_My_dan_truoc_Paraguay_2_-_0_VTV24_transcription.json
+[22:15:40]   - [success                  ] AN4TdnqkSPY | Bàn phản lưới đầu tiên của World Cup 2026 trong tr | audio: Ban_phan_luoi_đau_tien_cua_World_Cup_2026_trong_tran_My_vs_Paraquay_VTV24.wav | json: Ban_phan_luoi_đau_tien_cua_World_Cup_2026_trong_tran_My_vs_Paraquay_VTV24_transcription.json
+[22:15:40]   - [success                  ] rZkw2_51i4o | Thời sự toàn cảnh ngày 13/6: Bắt nhóm người lập "đ | audio: Thoi_su_toan_canh_ngay_13_6_Bat_nhom_nguoi_lap_đai_ban_doanh_lua_đao_tai_TP_Ho_Chi_Minh_VTV24.wav | json: Thoi_su_toan_canh_ngay_13_6_Bat_nhom_nguoi_lap_đai_ban_doanh_lua_đao_tai_TP_Ho_Chi_Minh_VTV24_transcription.json
+[22:15:40]   - [success                  ] ziTFS8XxS_Q | Mỹ tiêu diệt trùm băng đảng khét tiếng tại Venezue | audio: My_tieu_diet_trum_bang_đang_khet_tieng_tai_Venezuela_Cum_tin_VTV24.wav | json: My_tieu_diet_trum_bang_đang_khet_tieng_tai_Venezuela_Cum_tin_VTV24_transcription.json
+[22:15:40]   - [success                  ] tOwUT1hl6Oo | World Cup đã trở nên “chặt chém” như thế nào sau 2 | audio: World_Cup_đa_tro_nen_chat_chem_nhu_the_nao_sau_20_nam_VTV24.wav | json: World_Cup_đa_tro_nen_chat_chem_nhu_the_nao_sau_20_nam_VTV24_transcription.json
+[22:15:40]   - [success                  ] hJMrqTOQh34 | Cận cảnh quá trình đại tu tăng hạn tiêm kích Su-30 | audio: Can_canh_qua_trinh_đai_tu_tang_han_tiem_kich_Su-30MK2_ngay_tai_Viet_Nam_VTV24.wav | json: Can_canh_qua_trinh_đai_tu_tang_han_tiem_kich_Su-30MK2_ngay_tai_Viet_Nam_VTV24_transcription.json
+[22:15:40]   - [success                  ] IVQ5_3kd3Hg | Chuyển động 24h ngày 13/6: Việt Nam làm chủ công n | audio: Chuyen_đong_24h_ngay_13_6_Viet_Nam_lam_chu_cong_nghe_đai_tu_tiem_kich_Su-30MK2_VTV24.wav | json: Chuyen_đong_24h_ngay_13_6_Viet_Nam_lam_chu_cong_nghe_đai_tu_tiem_kich_Su-30MK2_VTV24_transcription.json
+[22:15:40]   - [success                  ] 3UNrkEYdOZo | World Cup 2026: Bosnia & Herzegovina thoát thua ở  | audio: World_Cup_2026_Bosnia_Herzegovina_thoat_thua_o_nhung_phut_bu_gio_cuoi_cung_VTV24.wav | json: World_Cup_2026_Bosnia_Herzegovina_thoat_thua_o_nhung_phut_bu_gio_cuoi_cung_VTV24_transcription.json
+[22:15:40]   - [success                  ] Z-vsMY-u03E | World Cup 2026: Vừa vào sân, Larin gỡ hoà cho Cana | audio: World_Cup_2026_Vua_vao_san_Larin_go_hoa_cho_Canada_voi_pha_xu_ly_đang_cap_trong_vong_cam_VTV24.wav | json: World_Cup_2026_Vua_vao_san_Larin_go_hoa_cho_Canada_voi_pha_xu_ly_đang_cap_trong_vong_cam_VTV24_transcription.json
+[22:15:40]   - [success                  ] h146ijFCOJ4 | World Cup 2026: Hậu vệ Sead Kolasinac có tình huốn | audio: World_Cup_2026_Hau_ve_Sead_Kolasinac_co_tinh_huong_pha_bong_ngay_tren_vach_voi_VTV24.wav | json: World_Cup_2026_Hau_ve_Sead_Kolasinac_co_tinh_huong_pha_bong_ngay_tren_vach_voi_VTV24_transcription.json
+[22:15:40]   - [success                  ] 8oaKcQAKEDo | World Cup 2026: Jovo Lukic đánh đầu ghi bàn mở tỉ  | audio: World_Cup_2026_Jovo_Lukic_đanh_đau_ghi_ban_mo_ti_so_sau_tinh_huong_phat_goc_VTV24.wav | json: World_Cup_2026_Jovo_Lukic_đanh_đau_ghi_ban_mo_ti_so_sau_tinh_huong_phat_goc_VTV24_transcription.json
+[22:15:40]   - [success                  ] JHp3pZuLCEM | Khởi tố các đối tượng buôn bán hơn 15 tấn yến giả, | audio: Khoi_to_cac_đoi_tuong_buon_ban_hon_15_tan_yen_gia_quang_cao_chua_70_to_yen_Cum_tin_VTV24.wav | json: Khoi_to_cac_đoi_tuong_buon_ban_hon_15_tan_yen_gia_quang_cao_chua_70_to_yen_Cum_tin_VTV24_transcription.json
+[22:15:40]   - [success                  ] 0BJMIWJEWX8 | Ông trùm lừa đảo Nhật Bản chính thức bị bắt | VTV2 | audio: Ong_trum_lua_đao_Nhat_Ban_chinh_thuc_bi_bat_VTV24.wav | json: Ong_trum_lua_đao_Nhat_Ban_chinh_thuc_bi_bat_VTV24_transcription.json
+[22:15:40]   - [success                  ] aqeC5eAfmOs | Mỹ yêu cầu Anthropic ngăn người nước ngoài truy cậ | audio: My_yeu_cau_Anthropic_ngan_nguoi_nuoc_ngoai_truy_cap_cac_mo_hinh_A_I_Cum_tin_VTV24.wav | json: My_yeu_cau_Anthropic_ngan_nguoi_nuoc_ngoai_truy_cap_cac_mo_hinh_A_I_Cum_tin_VTV24_transcription.json
+[22:15:40]   - [success                  ] QzYTpBDRxso | Câu chuyện về phóng viên quốc tế tác nghiệp tại lễ | audio: Cau_chuyen_ve_phong_vien_quoc_te_tac_nghiep_tai_le_khai_mac_World_Cup_2026_VTV24.wav | json: Cau_chuyen_ve_phong_vien_quoc_te_tac_nghiep_tai_le_khai_mac_World_Cup_2026_VTV24_transcription.json
+[22:15:40]   - [success                  ] ryLqor0qpZ0 | Thời sự toàn cảnh trưa 13/6: Công ước quốc tế bảo  | audio: Thoi_su_toan_canh_trua_13_6_Cong_uoc_quoc_te_bao_ve_nguoi_lao_đong_tren_nen_tang_so_VTV24.wav | json: Thoi_su_toan_canh_trua_13_6_Cong_uoc_quoc_te_bao_ve_nguoi_lao_đong_tren_nen_tang_so_VTV24_transcription.json
+[22:15:40]   - [success                  ] WnEyFDZ2rZI | Vụ 81 người ngộ độc ở trường tiểu học tại Đồng Thá | audio: Vu_81_nguoi_ngo_đoc_o_truong_tieu_hoc_tai_Đong_Thap_Phat_hien_thuc_an_nhiem_khuan_Cum_tin_VTV24.wav | json: Vu_81_nguoi_ngo_đoc_o_truong_tieu_hoc_tai_Đong_Thap_Phat_hien_thuc_an_nhiem_khuan_Cum_tin_VTV24_transcription.json
+[22:15:40]   - [success                  ] wGledY57piw | Bộ Công an đề xuất: Người bán thực phẩm trên mạng  | audio: Bo_Cong_an_đe_xuat_Nguoi_ban_thuc_pham_tren_mang_xa_hoi_phai_xac_thuc_danh_tinh_VTV24.wav | json: Bo_Cong_an_đe_xuat_Nguoi_ban_thuc_pham_tren_mang_xa_hoi_phai_xac_thuc_danh_tinh_VTV24_transcription.json
+[22:15:40]   - [success                  ] C4RIDM551Xk | Thế giới toàn cảnh ngày 13/6: Tỷ phú nghìn tỷ USD  | audio: The_gioi_toan_canh_ngay_13_6_Ty_phu_nghin_ty_USD_đau_tien_tren_the_gioi_VTV24.wav | json: The_gioi_toan_canh_ngay_13_6_Ty_phu_nghin_ty_USD_đau_tien_tren_the_gioi_VTV24_transcription.json
+[22:15:40]   - [success                  ] Qw4ZJfJK70k | Thời tiết ngày 13/6: Bắc Bộ và Trung Bộ tiếp tục n | audio: Thoi_tiet_ngay_13_6_Bac_Bo_va_Trung_Bo_tiep_tuc_nang_nong_phia_Nam_co_mua_giong_vao_chieu.wav | json: Thoi_tiet_ngay_13_6_Bac_Bo_va_Trung_Bo_tiep_tuc_nang_nong_phia_Nam_co_mua_giong_vao_chieu_transcription.json
+[22:15:40]   - [success                  ] HLub2-kmYqg | HIGHLIGHTS Hàn Quốc 2-1 CH Czech: Hwang In-beom rự | audio: HIGHLIGHTS_Han_Quoc_2-1_CH_Czech_Hwang_In-beom_ruc_sang_giup_Manh_ho_nguoc_dong_World_Cup_2026.wav | json: HIGHLIGHTS_Han_Quoc_2-1_CH_Czech_Hwang_In-beom_ruc_sang_giup_Manh_ho_nguoc_dong_World_Cup_2026_transcription.json
+
+--------------------------------------------------------------------------------
+CHANNEL 1/1 HOAN THANH (status: success)
+--------------------------------------------------------------------------------
+
+================================================================================
+BATCH END
+================================================================================
+[22:15:40] Ket thuc luc  : 2026-06-14T22:15:40.591507
+[22:15:40] Tong channels : 1
+[22:15:40] Thanh cong    : 1
+[22:15:40] That bai      : 0
+[22:15:40] 
+[22:15:40] CHI TIET TUNG KENH:
+[22:15:40]   [success               ] https://www.youtube.com/@vtv24/videos
+[22:15:40] 
+[22:15:40] TAT CA KENH DA XU LY XONG!
+[22:15:40] 
+[22:15:40] Log file: youtube_dataset/logs/run_20260614_215614.txt
+================================================================================
+RUN LOG - ket thuc luc 2026-06-14T22:15:40.591663
+================================================================================

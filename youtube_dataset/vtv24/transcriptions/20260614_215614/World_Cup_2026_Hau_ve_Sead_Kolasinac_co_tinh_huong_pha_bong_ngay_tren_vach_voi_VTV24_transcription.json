@@ -1,0 +1,81 @@
+{
+  "audio_duration": 59.776,
+  "audio_path": "World_Cup_2026_Hau_ve_Sead_Kolasinac_co_tinh_huong_pha_bong_ngay_tren_vach_voi_VTV24.wav",
+  "video_id": "h146ijFCOJ4",
+  "title": "World Cup 2026: Hậu vệ Sead Kolasinac có tình huống phá bóng ngay trên vạch vôi | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=h146ijFCOJ4",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.96,
+      "end": 10.0,
+      "speaker": "SPEAKER_00",
+      "text": "Vẫn có một cái gì đó rất ghê đến từ những tình huống phản công của Bos Nhã Zina."
+    },
+    {
+      "start": 10.0,
+      "end": 21.96,
+      "speaker": "SPEAKER_00",
+      "text": "Mila cơ hội, cơ hội cho Canada [la hét] vẫn không vào không thể tin nổi >> Sà Ngang đã cứu thua cho các cầu thủ Bubina."
+    },
+    {
+      "start": 21.96,
+      "end": 32.439,
+      "speaker": "SPEAKER_00",
+      "text": "Họ đang mặc áo đỏ mà đen quá ở những tình huống dứt điểm cuối cùng."
+    },
+    {
+      "start": 32.439,
+      "end": 37.81,
+      "speaker": "SPEAKER_00",
+      "text": "Một cơ hội sáng nhất từ đầu trận đấu tới giờ của các cầu thủ Canada."
+    },
+    {
+      "start": 37.81,
+      "end": 41.48,
+      "speaker": "SPEAKER_00",
+      "text": "Phối hợp rất mượt."
+    },
+    {
+      "start": 41.48,
+      "end": 46.529,
+      "speaker": "SPEAKER_00",
+      "text": "Chúng ta vừa nói đến tình huống phản lưới nhà cách đây 12 năm của Casak."
+    },
+    {
+      "start": 46.529,
+      "end": 48.559,
+      "speaker": "SPEAKER_00",
+      "text": "Chút nữa thì anh lại tiếp tục đốt lưới nhà."
+    },
+    {
+      "start": 48.559,
+      "end": 50.64,
+      "speaker": "SPEAKER_00",
+      "text": "May quá."
+    },
+    {
+      "start": 50.64,
+      "end": 55.48,
+      "speaker": "SPEAKER_00",
+      "text": ">> Rất may cho anh nhưng rất đen cho Canada."
+    },
+    {
+      "start": 55.48,
+      "end": 55.48,
+      "speaker": "SPEAKER_00",
+      "text": "Họ đã ở rất gần bàn thắng rồi."
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

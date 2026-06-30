@@ -1,0 +1,28 @@
+name: qwen3-asr
+
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.12
+  - pip
+  - git
+  - ffmpeg
+  - libsndfile
+
+  - pip:
+      # PyTorch
+      - torch==2.7.1
+      - torchaudio==2.7.1
+
+      # Dataset processing
+      - datasets==4.0.0
+      - pandas==2.3.2
+      - pyarrow==21.0.0
+      - numpy==2.3.3
+
+      # Qwen ASR
+      - qwen-asr==0.0.6

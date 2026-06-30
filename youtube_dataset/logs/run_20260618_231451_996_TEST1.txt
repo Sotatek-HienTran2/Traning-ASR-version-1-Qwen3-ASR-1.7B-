@@ -1,0 +1,74 @@
+================================================================================
+RUN LOG - bat dau luc 2026-06-18T23:14:51.996464
+Log file: youtube_dataset/logs/run_20260618_231451_996_TEST1.txt
+Script path: /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py
+Working dir : /home/hientran/Qwen3-ASR
+Python      : 3.11.15
+================================================================================
+
+
+================================================================================
+BATCH START
+================================================================================
+[23:14:51] Timestamp      : 2026-06-18T23:14:51.996562
+[23:14:51] Script path    : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py
+[23:14:51] Channels file  : /tmp/test_channels_inst1.txt
+[23:14:51] Total channels : 1
+[23:14:51] Command        : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py --channels-file /tmp/test_channels_inst1.txt --max-results 2 --max-fetch 2 --video-delay 3 --skip-existing --instance-id TEST1 --use-vpn --vpn-isolated
+[23:14:51] 
+[23:14:51] Instance ID   : TEST1 (PID=2086181)
+[23:14:51] Cache dir     : /home/hientran/sythetic_crawl_data/.cache_TEST1
+
+================================================================================
+CHANNEL 1/1: https://www.youtube.com/@dunglailaptrinh
+================================================================================
+[23:14:51] Channel name    : dunglailaptrinh
+[23:14:51] Run timestamp   : 20260618_231451
+[23:14:51] Output folder   : <output_root>/dunglailaptrinh/
+[23:14:51] Trang thai      : BAT DAU xu ly kenh
+[23:14:51] Fetching videos (max_results=2, max_fetch=2, order=date, use_rss=False, batch_size=20000, socket_timeout=600s, video_delay=3s, fetch_delay=10s, max_retries=3)
+[23:14:58] Tim thay 2 video tu kenh
+[23:14:58] Sau filter: 2/2 video
+[23:19:38] Bat dau pipeline (YouTube transcript)
+[23:19:38] Pipeline partition (total=2):
+[23:19:38]   Bucket A (audio+json da co, SKIP)         : 0
+[23:19:38]   Bucket B (co audio, chua co json)         : 0
+[23:19:38]   Bucket C (chua co audio, can download)   : 2
+[23:19:38] [C-1/2] gRYqlDwkWTM | Hướng dẫn làm website đẹp và nhanh với trợ lý thiế -> download + transcribe
+[23:19:50] [C-1/2] gRYqlDwkWTM | DOWNLOAD FAILED: ERROR: [youtube] gRYqlDwkWTM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+[23:19:50] [C-2/2] h2sejMJa-LI | Bài học về AI Agent từ keynote của CEO Jensen Huan -> download + transcribe
+[23:20:41] [C-2/2] h2sejMJa-LI | NO SUBS (audio: Bai_hoc_ve_AI_Agent_tu_keynote_cua_CEO_Jensen_Huang_tai_NVIDIA_GTC2026_tai_Taipei_Đai_Loan.wav)
+[23:20:41] 
+Pipeline channel 1/1: 0 success, 0 skipped, 2 failed (tong: 2)
+[23:20:41] Cac video loi trong kenh nay:
+[23:20:41]   - [download_failed] gRYqlDwkWTM | Hướng dẫn làm website đẹp và nhanh với trợ lý thiế | ERROR: [youtube] gRYqlDwkWTM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+[23:20:41]   - [transcript_unavailable] h2sejMJa-LI | Bài học về AI Agent từ keynote của CEO Jensen Huan | no_youtube_subs
+[23:20:41] 
+[23:20:41] Trang thai cuoi : success
+[23:20:41] Video processed : 2 (success: 0, failed/skipped: 2)
+[23:20:41] 
+[23:20:41] Chi tiet 2 video trong kenh:
+[23:20:41]   - [download_failed          ] gRYqlDwkWTM | Hướng dẫn làm website đẹp và nhanh với trợ lý thiế | audio: Huong_dan_lam_website_đep_va_nhanh_voi_tro_ly_thiet_ke_AI_trong_7_phut.wav | json: - | ERROR: ERROR: [youtube] gRYqlDwkWTM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+[23:20:41]   - [transcript_unavailable   ] h2sejMJa-LI | Bài học về AI Agent từ keynote của CEO Jensen Huan | audio: Bai_hoc_ve_AI_Agent_tu_keynote_cua_CEO_Jensen_Huang_tai_NVIDIA_GTC2026_tai_Taipei_Đai_Loan.wav | json: - | ERROR: no_youtube_subs
+
+--------------------------------------------------------------------------------
+CHANNEL 1/1 HOAN THANH (status: success)
+--------------------------------------------------------------------------------
+
+================================================================================
+BATCH END
+================================================================================
+[23:20:41] Ket thuc luc  : 2026-06-18T23:20:41.874452
+[23:20:41] Tong channels : 1
+[23:20:41] Thanh cong    : 1
+[23:20:41] That bai      : 0
+[23:20:41] 
+[23:20:41] CHI TIET TUNG KENH:
+[23:20:41]   [success               ] https://www.youtube.com/@dunglailaptrinh
+[23:20:41] 
+[23:20:41] TAT CA KENH DA XU LY XONG!
+[23:20:41] 
+[23:20:41] Log file: youtube_dataset/logs/run_20260618_231451_996_TEST1.txt
+================================================================================
+RUN LOG - ket thuc luc 2026-06-18T23:20:41.874556
+================================================================================

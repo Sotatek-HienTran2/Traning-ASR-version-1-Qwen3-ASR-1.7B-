@@ -1,0 +1,31 @@
+================================================================================
+RUN LOG - bat dau luc 2026-06-18T23:14:52.570945
+Log file: youtube_dataset/logs/run_20260618_231452_570_TEST2.txt
+Script path: /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py
+Working dir : /home/hientran/Qwen3-ASR
+Python      : 3.11.15
+================================================================================
+
+
+================================================================================
+BATCH START
+================================================================================
+[23:14:52] Timestamp      : 2026-06-18T23:14:52.571042
+[23:14:52] Script path    : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py
+[23:14:52] Channels file  : /tmp/test_channels_inst2.txt
+[23:14:52] Total channels : 1
+[23:14:52] Command        : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py --channels-file /tmp/test_channels_inst2.txt --max-results 2 --max-fetch 2 --video-delay 3 --skip-existing --instance-id TEST2 --use-vpn --vpn-isolated
+[23:14:52] 
+[23:14:52] Instance ID   : TEST2 (PID=2086211)
+[23:14:52] Cache dir     : /home/hientran/sythetic_crawl_data/.cache_TEST2
+
+================================================================================
+CHANNEL 1/1: https://www.youtube.com/@vietnh1009/videos
+================================================================================
+[23:14:52] Channel name    : vietnh1009
+[23:14:52] Run timestamp   : 20260618_231452
+[23:14:52] Output folder   : <output_root>/vietnh1009/
+[23:14:52] Trang thai      : BAT DAU xu ly kenh
+[23:14:52] Fetching videos (max_results=2, max_fetch=2, order=date, use_rss=False, batch_size=20000, socket_timeout=600s, video_delay=3s, fetch_delay=10s, max_retries=3)
+[23:14:59] Tim thay 2 video tu kenh
+[23:14:59] Sau filter: 2/2 video

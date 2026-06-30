@@ -1,0 +1,93 @@
+{
+  "audio_duration": 57.003,
+  "audio_path": "World_Cup_2026_Jovo_Lukic_đanh_đau_ghi_ban_mo_ti_so_sau_tinh_huong_phat_goc_VTV24.wav",
+  "video_id": "8oaKcQAKEDo",
+  "title": "World Cup 2026: Jovo Lukic đánh đầu ghi bàn mở tỉ số sau tình huống phạt góc | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=8oaKcQAKEDo",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.04,
+      "end": 4.396,
+      "speaker": "SPEAKER_00",
+      "text": "Và chúng ta đợi xem họ sẽ làm gì."
+    },
+    {
+      "start": 4.396,
+      "end": 6.64,
+      "speaker": "SPEAKER_00",
+      "text": "Đánh đu ngược."
+    },
+    {
+      "start": 6.64,
+      "end": 10.8,
+      "speaker": "SPEAKER_00",
+      "text": ">> Cuối cùng [la hét] thì BIA đã có được bàn thắng rồi."
+    },
+    {
+      "start": 10.8,
+      "end": 13.053,
+      "speaker": "SPEAKER_00",
+      "text": "Đúng là sở trường đánh đầu của các cầu thủ Bia."
+    },
+    {
+      "start": 13.053,
+      "end": 17.56,
+      "speaker": "SPEAKER_00",
+      "text": "Và vẫn là bóng."
+    },
+    {
+      "start": 17.56,
+      "end": 24.519,
+      "speaker": "SPEAKER_00",
+      "text": "Các cầu thủ Bovina đã mở tỉ số trên sân BH tại Toronto."
+    },
+    {
+      "start": 24.519,
+      "end": 26.0,
+      "speaker": "SPEAKER_00",
+      "text": ">> Một vũ khí đặc biệt của bố nhá."
+    },
+    {
+      "start": 26.0,
+      "end": 32.52,
+      "speaker": "SPEAKER_00",
+      "text": "Ở vòng loại World cấp họ đã phát huy điều này ở từng trận đấu cụ thể."
+    },
+    {
+      "start": 32.52,
+      "end": 46.199,
+      "speaker": "SPEAKER_00",
+      "text": "Và đến ngày hôm nay ở trận khai mạc của World Cup 2026 họ đã cho Canada nếm mùi [hò reo] niềm vui về sự hạnh phúc."
+    },
+    {
+      "start": 46.199,
+      "end": 53.53,
+      "speaker": "SPEAKER_00",
+      "text": "Một bàn thắng với họ ở vục ti World Cup là một điều vô cùng ý nghĩa và chúng ta có thể thấy rằng là các cầu thủ Bia đã ôm nhau."
+    },
+    {
+      "start": 53.53,
+      "end": 55.075,
+      "speaker": "SPEAKER_00",
+      "text": "Ohô."
+    },
+    {
+      "start": 55.075,
+      "end": 55.075,
+      "speaker": "SPEAKER_00",
+      "text": "[âm nhạc]"
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

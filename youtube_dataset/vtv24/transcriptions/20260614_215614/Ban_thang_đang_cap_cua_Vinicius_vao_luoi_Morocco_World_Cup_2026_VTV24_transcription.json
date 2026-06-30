@@ -1,0 +1,93 @@
+{
+  "audio_duration": 54.848,
+  "audio_path": "Ban_thang_đang_cap_cua_Vinicius_vao_luoi_Morocco_World_Cup_2026_VTV24.wav",
+  "video_id": "qQbMq9-7Dro",
+  "title": "Bàn thắng đẳng cấp của Vinicius vào lưới Morocco | World Cup 2026 | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=qQbMq9-7Dro",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 3.919,
+      "end": 9.087,
+      "speaker": "SPEAKER_00",
+      "text": "Pha xử lý của Bruno vẫn còn."
+    },
+    {
+      "start": 9.087,
+      "end": 10.84,
+      "speaker": "SPEAKER_00",
+      "text": "Vinicius quạt bóng vào trong V."
+    },
+    {
+      "start": 10.84,
+      "end": 17.76,
+      "speaker": "SPEAKER_00",
+      "text": "[la hét] Đó là khoảnh khắc ngôi dối họng của Vinicius Junior."
+    },
+    {
+      "start": 17.76,
+      "end": 22.439,
+      "speaker": "SPEAKER_00",
+      "text": "Một bàn thắng rất đẹp và rất quý giá của VDS."
+    },
+    {
+      "start": 22.439,
+      "end": 22.399,
+      "speaker": "SPEAKER_00",
+      "text": "Một pha bóng từ hư vô."
+    },
+    {
+      "start": 22.399,
+      "end": 22.914,
+      "speaker": "SPEAKER_00",
+      "text": "Có thể nói là như vậy."
+    },
+    {
+      "start": 22.914,
+      "end": 27.139,
+      "speaker": "SPEAKER_00",
+      "text": "Vinicius nhận bóng ở một vị trí không hề thuận lợi chút nào."
+    },
+    {
+      "start": 27.139,
+      "end": 37.719,
+      "speaker": "SPEAKER_00",
+      "text": "Nhưng khi anh đã đưa được nó vào trong vòng cấm với sự chủ động của mình thì chúng ta hiểu mọi hàng phòng ngự trên thế giới đều sẽ bị đặt vào tình trạng báo động."
+    },
+    {
+      "start": 37.719,
+      "end": 36.829,
+      "speaker": "SPEAKER_00",
+      "text": "Quá tự tin."
+    },
+    {
+      "start": 36.829,
+      "end": 43.239,
+      "speaker": "SPEAKER_00",
+      "text": "Vinicius không cần nhìn khung thành anh tập trung nhìn trái bóng để có được một pha dứất điểm tốt nhất."
+    },
+    {
+      "start": 43.239,
+      "end": 56.12,
+      "speaker": "SPEAKER_00",
+      "text": "Những tình huống như thế này là những thứ mà Vinicius đã làm quá nhiều lần trong sự nghiệp của mình, quá nhiều lần ở Real Madrid, quá nhiều lần dưới sự dẫn dắt của huấn luyện viên Carlo Ancelotti."
+    },
+    {
+      "start": 56.12,
+      "end": 56.12,
+      "speaker": "SPEAKER_00",
+      "text": "am"
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

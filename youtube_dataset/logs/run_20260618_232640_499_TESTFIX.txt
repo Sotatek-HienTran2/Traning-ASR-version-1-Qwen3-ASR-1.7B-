@@ -1,0 +1,71 @@
+================================================================================
+RUN LOG - bat dau luc 2026-06-18T23:26:40.500068
+Log file: youtube_dataset/logs/run_20260618_232640_499_TESTFIX.txt
+Script path: /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py
+Working dir : /home/hientran/Qwen3-ASR
+Python      : 3.11.15
+================================================================================
+
+
+================================================================================
+BATCH START
+================================================================================
+[23:26:40] Timestamp      : 2026-06-18T23:26:40.500156
+[23:26:40] Script path    : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py
+[23:26:40] Channels file  : /tmp/test_channels_inst1.txt
+[23:26:40] Total channels : 1
+[23:26:40] Command        : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs_multi.py --channels-file /tmp/test_channels_inst1.txt --max-results 1 --max-fetch 1 --video-delay 3 --skip-existing --instance-id TESTFIX --use-vpn --vpn-isolated
+[23:26:40] 
+[23:26:40] Instance ID   : TESTFIX (PID=2096659)
+[23:26:40] Cache dir     : /home/hientran/sythetic_crawl_data/.cache_TESTFIX
+
+================================================================================
+CHANNEL 1/1: https://www.youtube.com/@dunglailaptrinh
+================================================================================
+[23:26:40] Channel name    : dunglailaptrinh
+[23:26:40] Run timestamp   : 20260618_232640
+[23:26:40] Output folder   : <output_root>/dunglailaptrinh/
+[23:26:40] Trang thai      : BAT DAU xu ly kenh
+[23:26:40] [PARTIAL] Channel thieu ['segments_csv'], chay lai pipeline
+[23:26:40] Fetching videos (max_results=1, max_fetch=1, order=date, use_rss=False, batch_size=20000, socket_timeout=600s, video_delay=3s, fetch_delay=10s, max_retries=3)
+[23:26:41] Tim thay 1 video tu kenh
+[23:26:41] Sau filter: 1/1 video
+[23:26:53] Bat dau pipeline (YouTube transcript)
+[23:26:53] Pipeline partition (total=1):
+[23:26:53]   Bucket A (audio+json da co, SKIP)         : 0
+[23:26:53]   Bucket B (co audio, chua co json)         : 0
+[23:26:53]   Bucket C (chua co audio, can download)   : 1
+[23:26:53] [C-1/1] gRYqlDwkWTM | Hướng dẫn làm website đẹp và nhanh với trợ lý thiế -> download + transcribe
+[23:27:14] [C-1/1] gRYqlDwkWTM | NO SUBS (audio: Huong_dan_lam_website_đep_va_nhanh_voi_tro_ly_thiet_ke_AI_trong_7_phut.wav)
+[23:27:14] 
+Pipeline channel 1/1: 0 success, 0 skipped, 1 failed (tong: 1)
+[23:27:14] Cac video loi trong kenh nay:
+[23:27:14]   - [transcript_unavailable] gRYqlDwkWTM | Hướng dẫn làm website đẹp và nhanh với trợ lý thiế | no_youtube_subs
+[23:27:14] 
+[23:27:14] Trang thai cuoi : success
+[23:27:14] Video processed : 1 (success: 0, failed/skipped: 1)
+[23:27:14] 
+[23:27:14] Chi tiet 1 video trong kenh:
+[23:27:14]   - [transcript_unavailable   ] gRYqlDwkWTM | Hướng dẫn làm website đẹp và nhanh với trợ lý thiế | audio: Huong_dan_lam_website_đep_va_nhanh_voi_tro_ly_thiet_ke_AI_trong_7_phut.wav | json: - | ERROR: no_youtube_subs
+
+--------------------------------------------------------------------------------
+CHANNEL 1/1 HOAN THANH (status: success)
+--------------------------------------------------------------------------------
+
+================================================================================
+BATCH END
+================================================================================
+[23:27:14] Ket thuc luc  : 2026-06-18T23:27:14.451796
+[23:27:14] Tong channels : 1
+[23:27:14] Thanh cong    : 1
+[23:27:14] That bai      : 0
+[23:27:14] 
+[23:27:14] CHI TIET TUNG KENH:
+[23:27:14]   [success               ] https://www.youtube.com/@dunglailaptrinh
+[23:27:14] 
+[23:27:14] TAT CA KENH DA XU LY XONG!
+[23:27:14] 
+[23:27:14] Log file: youtube_dataset/logs/run_20260618_232640_499_TESTFIX.txt
+================================================================================
+RUN LOG - ket thuc luc 2026-06-18T23:27:14.451910
+================================================================================

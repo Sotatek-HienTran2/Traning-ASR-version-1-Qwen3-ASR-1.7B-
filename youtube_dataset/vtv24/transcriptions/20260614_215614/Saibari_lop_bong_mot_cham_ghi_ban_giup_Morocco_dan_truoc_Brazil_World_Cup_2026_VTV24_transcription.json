@@ -1,0 +1,69 @@
+{
+  "audio_duration": 56.299,
+  "audio_path": "Saibari_lop_bong_mot_cham_ghi_ban_giup_Morocco_dan_truoc_Brazil_World_Cup_2026_VTV24.wav",
+  "video_id": "Q_JBa0jMSJE",
+  "title": "Saibari lốp bóng một chạm, ghi bàn giúp Morocco dẫn trước Brazil | World Cup 2026 | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=Q_JBa0jMSJE",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.12,
+      "end": 6.52,
+      "speaker": "SPEAKER_00",
+      "text": "Sự kết nối bên cánh phải giữa Ivanes và Paketa cho đến lúc này là không tốt."
+    },
+    {
+      "start": 6.52,
+      "end": 17.96,
+      "speaker": "SPEAKER_00",
+      "text": "Đường chuyền nhanh cơ hội cho cầu thủ Marok đối mặt với thủ môn [la hét] Sai."
+    },
+    {
+      "start": 17.96,
+      "end": 24.119,
+      "speaker": "SPEAKER_00",
+      "text": "Bàn thắng của Marok họ lùi lại nhường thế trận cho Brazil và chờ một tình huống chuyển trạng thái như thế này."
+    },
+    {
+      "start": 24.119,
+      "end": 27.32,
+      "speaker": "SPEAKER_00",
+      "text": "Chúng ta cùng nhìn lại đường bóng xuất phát từ Mã Sa Huy."
+    },
+    {
+      "start": 27.32,
+      "end": 30.76,
+      "speaker": "SPEAKER_00",
+      "text": "Một đường trong khe cực kỳ đẹp dành cho Sai."
+    },
+    {
+      "start": 30.76,
+      "end": 37.268,
+      "speaker": "SPEAKER_00",
+      "text": "Và cũng chỉ cần một chạm thôi, số 11 đã loại bỏ một thủ môn đang dâng cao bằng một cú lốp bóng rất điệu nghệ."
+    },
+    {
+      "start": 37.268,
+      "end": 41.44,
+      "speaker": "SPEAKER_00",
+      "text": "Tỷ số là 1-0 dành cho đội tuyển Marok."
+    },
+    {
+      "start": 41.44,
+      "end": 51.48,
+      "speaker": "SPEAKER_00",
+      "text": "Saari cầu thủ đã ghi 21 bàn trong 40 lần ra sân trên mọi đối trường cho PSV mùa này."
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

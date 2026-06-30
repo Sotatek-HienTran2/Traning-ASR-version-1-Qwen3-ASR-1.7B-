@@ -1,0 +1,63 @@
+{
+  "audio_duration": 59.968,
+  "audio_path": "World_Cup_2026_Reyna_dut_điem_đieu_nghe_an_đinh_chien_thang_4-1_cua_My_truoc_Paraguay_VTV24.wav",
+  "video_id": "REPupWjudPQ",
+  "title": "World Cup 2026: Reyna dứt điểm điệu nghệ, ấn định chiến thắng 4-1 của Mỹ trước Paraguay | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=REPupWjudPQ",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 5.64,
+      "end": 14.227,
+      "speaker": "SPEAKER_00",
+      "text": "Cơ hội dứt điểm sút bóc v [la hét] Reina."
+    },
+    {
+      "start": 14.227,
+      "end": 19.28,
+      "speaker": "SPEAKER_00",
+      "text": "Và đó là một pha xử lý cực kỳ tuyệt vời."
+    },
+    {
+      "start": 19.28,
+      "end": 29.56,
+      "speaker": "SPEAKER_00",
+      "text": "Một trận đấu mãn nhãn, một bàn thắng tuyệt đẹp và một kết thúc như một bộ phim của đội tuyển Mỹ."
+    },
+    {
+      "start": 29.56,
+      "end": 38.33,
+      "speaker": "SPEAKER_00",
+      "text": "Những giây phút cuối cùng của hiệp một, những giây phút cuối cùng của hiệp hai và điều cuối cùng là bóng luôn làm túc lưới khung thành của Paragay."
+    },
+    {
+      "start": 38.33,
+      "end": 45.8,
+      "speaker": "SPEAKER_00",
+      "text": "Lần này là một cú đá bằng mã ngoài chân phải điệu nghệ của Giovan Reina."
+    },
+    {
+      "start": 45.8,
+      "end": 54.92,
+      "speaker": "SPEAKER_00",
+      "text": "Cảm giác như người ta đang được xem Ricardo Caresma của đội tuyển Bộ Đào Nha thời kỳ đỉnh cao phong độ vậy."
+    },
+    {
+      "start": 54.92,
+      "end": 58.12,
+      "speaker": "SPEAKER_00",
+      "text": "Quả Triela đẹp mắt ấn tượng giâu cảm xúc và khiến tất cả phải bật dậy."
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

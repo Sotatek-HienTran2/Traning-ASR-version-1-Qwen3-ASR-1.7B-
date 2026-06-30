@@ -1,0 +1,29 @@
+================================================================================
+RUN LOG - bat dau luc 2026-06-16T16:28:56.233283
+Log file: youtube_dataset/logs/run_20260616_162856.txt
+Script path: /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs.py
+Working dir : /home/hientran/Qwen3-ASR
+Python      : 3.11.15
+================================================================================
+
+
+================================================================================
+BATCH START
+================================================================================
+[16:28:56] Timestamp      : 2026-06-16T16:28:56.233332
+[16:28:56] Script path    : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs.py
+[16:28:56] Channels file  : /home/hientran/sythetic_crawl_data/channels_audio/channels_thoi_su_1.txt
+[16:28:56] Total channels : 1
+[16:28:56] Command        : /home/hientran/sythetic_crawl_data/youtube_researcher_youtube_subs.py --max-results 10 --order viewCount --no-fix --channels-file /home/hientran/sythetic_crawl_data/channels_audio/channels_thoi_su_1.txt --video-delay 5 --max-fetch 5 --batch-size 5 --max-results 5 --skip-existing --use-vpn --vpn-rotate-every 5
+[16:28:56] 
+
+================================================================================
+CHANNEL 1/1: https://www.youtube.com/@truyenhinh4k/videos
+================================================================================
+[16:28:56] Channel name    : truyenhinh4k
+[16:28:56] Run timestamp   : 20260616_162856
+[16:28:56] Output folder   : <output_root>/truyenhinh4k/
+[16:28:56] Trang thai      : BAT DAU xu ly kenh
+[16:28:56] Fetching videos (max_results=5, max_fetch=5, order=viewCount, use_rss=False, batch_size=5, socket_timeout=20s, video_delay=5s, fetch_delay=10s, max_retries=3)
+[16:28:59] Tim thay 5 video tu kenh
+[16:28:59] Sau filter: 5/5 video

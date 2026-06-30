@@ -1,0 +1,63 @@
+{
+  "audio_duration": 55.851,
+  "audio_path": "World_Cup_2026_Balogun_ghi_ban_My_dan_truoc_Paraguay_2_-_0_VTV24.wav",
+  "video_id": "gmZiE4KSEoY",
+  "title": "World Cup 2026: Balogun ghi bàn, Mỹ dẫn trước Paraguay 2 - 0 | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=gmZiE4KSEoY",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.12,
+      "end": 7.839,
+      "speaker": "SPEAKER_00",
+      "text": "Dường như là Polisic rất tự tin và thoải mái khi đối mặt với Jose Ceres."
+    },
+    {
+      "start": 7.839,
+      "end": 23.359,
+      "speaker": "SPEAKER_00",
+      "text": "Polis Pulisic sút bó [la hét] v [la hét] lần này thì không gì có thể từ chối được bàn thắng của Balogan."
+    },
+    {
+      "start": 23.359,
+      "end": 26.033,
+      "speaker": "SPEAKER_00",
+      "text": "Vẫn là những gương mặt quen thuộc anh Khắc Cường ạ."
+    },
+    {
+      "start": 26.033,
+      "end": 32.259,
+      "speaker": "SPEAKER_00",
+      "text": "Vẫn là Christian Pulisic, vẫn là Balogan và vẫn là những cái lắc đầu, những sự thất vọng của các cầu thủ Paraguay."
+    },
+    {
+      "start": 32.259,
+      "end": 40.079,
+      "speaker": "SPEAKER_00",
+      "text": "Hai bàn thắng của đội tuyển Mỹ gần như là những phiên bản copy của nhau."
+    },
+    {
+      "start": 40.079,
+      "end": 39.98,
+      "speaker": "SPEAKER_00",
+      "text": "Lại là Pulisic khởi xướng."
+    },
+    {
+      "start": 39.98,
+      "end": 52.36,
+      "speaker": "SPEAKER_00",
+      "text": "Lần này không phải là một tình huống đã phản lưới nhạ nữa mà lần này là một cú đặt lòng tự tin của ba Logan [hò reo] để khẩu thần công của đội tuyển Mỹ có thể lên tiếng."
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

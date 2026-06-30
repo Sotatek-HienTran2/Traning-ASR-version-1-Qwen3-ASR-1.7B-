@@ -1,0 +1,267 @@
+{
+  "audio_duration": 346.674,
+  "audio_path": "My_yeu_cau_Anthropic_ngan_nguoi_nuoc_ngoai_truy_cap_cac_mo_hinh_A_I_Cum_tin_VTV24.wav",
+  "video_id": "aqeC5eAfmOs",
+  "title": "Mỹ yêu cầu Anthropic ngăn người nước ngoài truy cập các mô hình A.I | Cụm tin | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=aqeC5eAfmOs",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.24,
+      "end": 12.875,
+      "speaker": "SPEAKER_00",
+      "text": "Tổ chức lao động quốc tế IO vừa thông qua công ước quốc tế đầu tiên nhằm bảo vệ quyền lợi của những người làm việc thông qua các nền tảng số như là tài xế công nghệ, nhân viên giao hàng hay lao động tự do trực tuyến."
+    },
+    {
+      "start": 12.875,
+      "end": 22.8,
+      "speaker": "SPEAKER_00",
+      "text": "Công ước ra đời trong bối cảnh ngày càng nhiều người làm việc qua các nền tảng số nhưng chưa được hưởng đầy đủ các quyền lợi lao động như người làm công ăn lương truyền thống."
+    },
+    {
+      "start": 22.8,
+      "end": 32.476,
+      "speaker": "SPEAKER_00",
+      "text": ">> Công ước được thông qua tại hội nghị lao động quốc tế ở J với 406 phiếu thuận."
+    },
+    {
+      "start": 32.476,
+      "end": 33.77,
+      "speaker": "SPEAKER_00",
+      "text": "tá phiếu trống và 36 phiếu trắng."
+    },
+    {
+      "start": 33.77,
+      "end": 39.535,
+      "speaker": "SPEAKER_00",
+      "text": "Điểm đáng chú ý là các quy định mới sẽ áp dụng cho người lao động trên nền tảng số dù họ được xếp là nhân viên hay lao động tự do."
+    },
+    {
+      "start": 39.535,
+      "end": 56.6,
+      "speaker": "SPEAKER_00",
+      "text": "Điều đó đồng nghĩa với việc những người chạy xe công nghệ, giao hàng hay nhận việc qua nền tảng số sẽ có thêm cơ sở để được bảo vệ về thu nhập, điều kiện làm việc an toàn, tiếp cận an sinh xã hội cũng như tránh bị khóa tài khoản hoặc chấm dứt hợp tác một cách tùy tiện."
+    },
+    {
+      "start": 56.6,
+      "end": 66.32,
+      "speaker": "SPEAKER_00",
+      "text": "Một nội dung mới khác là các nền tảng số sẽ phải minh bạch hơn về cách thuật toán, phân việc, tính thu nhập hoặc đánh giá hiệu suất làm việc."
+    },
+    {
+      "start": 66.32,
+      "end": 67.6,
+      "speaker": "SPEAKER_00",
+      "text": "Đây thực sự là một dấu mốc lịch sử."
+    },
+    {
+      "start": 67.6,
+      "end": 77.4,
+      "speaker": "SPEAKER_00",
+      "text": "Lần đầu tiên người sử dụng lao động, người lao động và chính phủ đồng thuận thông qua một công ước về hiện tại và tương lai của việc làm."
+    },
+    {
+      "start": 77.4,
+      "end": 81.935,
+      "speaker": "SPEAKER_00",
+      "text": "Theo ILO, đây là công ước quốc tế đầu tiên thiết lập các tiêu chuẩn lao động dành riêng cho người lao động trên các nền tảng số."
+    },
+    {
+      "start": 81.935,
+      "end": 88.529,
+      "speaker": "SPEAKER_00",
+      "text": "Công ước sẽ có hiệu lực sau khi được các quốc gia thành viên phê chuẩn và đưa vào luật trong nước."
+    },
+    {
+      "start": 88.529,
+      "end": 95.2,
+      "speaker": "SPEAKER_00",
+      "text": "Ngân hàng Thế giới ước tính hiện có từ 154 đến 435 triệu lao động trên nền tảng số trên toàn cầu."
+    },
+    {
+      "start": 95.2,
+      "end": 119.605,
+      "speaker": "SPEAKER_00",
+      "text": "Công ty trí tuệ nhân tạo Antropic cho biết là đã nhận được lệnh từ chính phủ Mỹ yêu cầu tạm ngừng cấp quyền truy cập cho tất cả công dân nước ngoài đối với hai mô hình là Fab File và Mos F lý do liên quan đến an ninh quốc gia và AnC cho rằng là có thể chính quyền Mỹ đã phát hiện một phương pháp vượt qua hay còn gọi là phá khóa đối với mô hình Facebook file."
+    },
+    {
+      "start": 119.605,
+      "end": 127.228,
+      "speaker": "SPEAKER_00",
+      "text": "Tuy nhiên, công ty tin rằng đã có sự hiểu lầm và đang nỗ lực khôi phục quyền truy cập cho khách hàng càng sớm càng tốt."
+    },
+    {
+      "start": 127.228,
+      "end": 134.319,
+      "speaker": "SPEAKER_00",
+      "text": "Lệnh này buộc Antropic phải ngừng đột ngột việc cung cấp Pile và Mop cho tất cả khách hàng."
+    },
+    {
+      "start": 134.319,
+      "end": 138.48,
+      "speaker": "SPEAKER_00",
+      "text": "Quyền truy cập của các mô hình khác của Anthoric thì sẽ không bị ảnh hưởng."
+    },
+    {
+      "start": 138.48,
+      "end": 156.248,
+      "speaker": "SPEAKER_00",
+      "text": "Nga vừa lập kỷ lục quốc hữu hóa khi tịch thu khối tài sản trị giá 550 tỷ Rou là khoảng hơn 7,6 tỷ đô la Mỹ trong vụ án của tỷ phú Vladimir Maskovic, người xếp thứ 51 trong danh sách của F, những người giàu nhất nước Nga."
+    },
+    {
+      "start": 156.248,
+      "end": 167.48,
+      "speaker": "SPEAKER_00",
+      "text": "Và theo bộ nội vụ Nga, vụ án liên quan đến tập đoàn nông nghiệp Brucego phát xuất phát từ các cáo buộc cho gian lận và lạm dụng chức quyền đối với người sáng lập."
+    },
+    {
+      "start": 167.48,
+      "end": 178.4,
+      "speaker": "SPEAKER_00",
+      "text": "Các phương tiện truyền thông Nga trích dẫn thông cáo của Bộ Nội vụ Nga ngày 11 tháng 6 cho biết, cuộc điều tra hình sự đối với doanh nhân Maskovic và các đồng phạm đã hoàn tất."
+    },
+    {
+      "start": 178.4,
+      "end": 186.853,
+      "speaker": "SPEAKER_00",
+      "text": "Các bị cáo phải đối mặt với các cáo buộc về tội gian lận, rửa tiền, phá sản có chủ đích và hối lộ trên quy mô đặc biệt lớn."
+    },
+    {
+      "start": 186.853,
+      "end": 199.28,
+      "speaker": "SPEAKER_00",
+      "text": "Theo yêu cầu của Viện kiểm sát tối cao Nga, toàn bộ tài sản bị tịch thu trong vụ án này với trị giá hơn 550 tỷ roup đã được chuyển đổi thành tài sản nhà nước."
+    },
+    {
+      "start": 199.28,
+      "end": 204.56,
+      "speaker": "SPEAKER_00",
+      "text": "Bajkovic 59 tuổi người sáng lập Brusargo một trong tập đoàn nông nghiệp lớn nhất của nước Nga đã bị tạm giam từ tháng 3 năm ngoái."
+    },
+    {
+      "start": 204.56,
+      "end": 224.48,
+      "speaker": "SPEAKER_00",
+      "text": "Theo các nhà điều tra, từ năm 2018 đến năm 2021, bị cáo và đồng phạm đã gian lận để thâu tóm một công ty cổ phần nông nghiệp lớn, sau đó đẩy công ty này vào tình trạng phá sản và giữ tiền bất chính, đồng thời lợi dụng các đường dây tham nhũng trong chính quyền một khu vực thuộc Nga."
+    },
+    {
+      "start": 224.48,
+      "end": 231.72,
+      "speaker": "SPEAKER_00",
+      "text": "Vụ án Rusarago được xem là vụ tịch thu tài sản tư nhân lớn nhất trong làn sóng quốc hóa ở Nga trong vòng hơn 3 năm qua."
+    },
+    {
+      "start": 231.72,
+      "end": 242.64,
+      "speaker": "SPEAKER_00",
+      "text": "Tổng giá trị tài sản thu giữ và chuyển giao cho nước từ nay lên tới 6,5.000 tỷ đúp là hơn 90 tỷ đô la Mỹ, tương đương 3,5% GDP của nước này."
+    },
+    {
+      "start": 242.64,
+      "end": 247.36,
+      "speaker": "SPEAKER_00",
+      "text": "Nhật Linh, phóng viên thường chú đài truyền hình Việt Nam từng Moskva Liên Bà."
+    },
+    {
+      "start": 247.36,
+      "end": 256.744,
+      "speaker": "SPEAKER_00",
+      "text": "Nắng nóng cực đoàn cùng tình trạng thiếu nước kéo dài đang gây thiệt hại nghiêm trọng cho nông nghiệp tại tỉnh x miền Nam của Pakistan."
+    },
+    {
+      "start": 256.744,
+      "end": 263.119,
+      "speaker": "SPEAKER_00",
+      "text": "Đây là vùng sản xuất phần lớn sản lượng ớt của Pakistan, đồng thời là khu vực trồng mía và bông quan trọng của nước này."
+    },
+    {
+      "start": 263.119,
+      "end": 271.6,
+      "speaker": "SPEAKER_00",
+      "text": "Nhiệt độ liên tục ở mức rất cao cùng nguồn nước ngày càng khan hiếm đang khiến nhiều cánh đồng khô héo và năng suất thì sụt giảm."
+    },
+    {
+      "start": 271.6,
+      "end": 279.226,
+      "speaker": "SPEAKER_00",
+      "text": "Tại nhiều khu của tỉnh Sint, ngày càng nhiều diện tích ớt bị héo úa do nắng nóng và thiếu nước."
+    },
+    {
+      "start": 279.226,
+      "end": 288.4,
+      "speaker": "SPEAKER_00",
+      "text": "Nông dân tại đây cho biết cây trồng cần được tới thường xuyên nhưng nguồn nước hiện không đáp ứng được nhu cầu sản xuất."
+    },
+    {
+      "start": 288.4,
+      "end": 289.825,
+      "speaker": "SPEAKER_00",
+      "text": ">> Nhiệt độ tăng cao khiến khó khăn ngày càng trồng chất."
+    },
+    {
+      "start": 289.825,
+      "end": 294.46,
+      "speaker": "SPEAKER_00",
+      "text": "Chi phí sản xuất nông nghiệp hiện tăng mạnh, vượt quá khả năng của nhiều nông dân."
+    },
+    {
+      "start": 294.46,
+      "end": 300.32,
+      "speaker": "SPEAKER_00",
+      "text": "Nắng nóng và thiếu nước có thể làm giảm năng suất, thậm chí mất trắng bù vụ."
+    },
+    {
+      "start": 300.32,
+      "end": 307.56,
+      "speaker": "SPEAKER_00",
+      "text": "Không chỉ đe dọa mùa màng, thời tiết cực đoan còn ảnh hưởng đến chất lượng nông sản và hoạt động tiêu thụ."
+    },
+    {
+      "start": 307.56,
+      "end": 316.84,
+      "speaker": "SPEAKER_00",
+      "text": "Tại các chợ nông sản, các thương lái cho biết chất lượng ớt đang giảm sút do cây trồng thiếu nước trong thời gian dài."
+    },
+    {
+      "start": 316.84,
+      "end": 320.41,
+      "speaker": "SPEAKER_00",
+      "text": "Thiếu nước và nắng nóng kéo dài làm chất lượng nông sản giảm đáng kể."
+    },
+    {
+      "start": 320.41,
+      "end": 327.72,
+      "speaker": "SPEAKER_00",
+      "text": "Nếu không tạo ra được sản phẩm đạt chất lượng cao, chúng tôi sẽ rất khó tiêu thụ tại các thị trường lớn hoặc xuất khẩu."
+    },
+    {
+      "start": 327.72,
+      "end": 333.4,
+      "speaker": "SPEAKER_00",
+      "text": ">> Pakistan hiện nằm trong nhóm các quốc gia sản xuất ớt hàng đầu thế giới."
+    },
+    {
+      "start": 333.4,
+      "end": 343.97,
+      "speaker": "SPEAKER_00",
+      "text": "Tuy nhiên, đợt nắng nóng với nhiệt độ lên tới hơn 50° C tại nhiều khu vực đang làm giấy lên lo ngại về sản lượng nông nghiệp và sinh kế của hàng nghìn hộ dân phụ thuộc vào loại cây trồng này."
+    },
+    {
+      "start": 343.97,
+      "end": 344.52,
+      "speaker": "SPEAKER_00",
+      "text": "nh"
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}

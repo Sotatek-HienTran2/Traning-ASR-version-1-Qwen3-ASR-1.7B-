@@ -1,0 +1,57 @@
+{
+  "audio_duration": 52.565,
+  "audio_path": "Ban_phan_luoi_đau_tien_cua_World_Cup_2026_trong_tran_My_vs_Paraquay_VTV24.wav",
+  "video_id": "AN4TdnqkSPY",
+  "title": "Bàn phản lưới đầu tiên của World Cup 2026 trong trận Mỹ vs Paraquay | VTV24",
+  "channel": "VTV24",
+  "url": "https://www.youtube.com/watch?v=AN4TdnqkSPY",
+  "num_speakers": 1,
+  "speakers": [
+    "SPEAKER_00"
+  ],
+  "source_files": [],
+  "segments": [
+    {
+      "start": 0.599,
+      "end": 4.351,
+      "speaker": "SPEAKER_00",
+      "text": "Đ Mỹ đang chơi với hạ ngự gồm có ba trung vệ."
+    },
+    {
+      "start": 4.351,
+      "end": 29.199,
+      "speaker": "SPEAKER_00",
+      "text": "Tiếp tục là pha lấy bóng của đội chủ nhà có khoảng trống bên cánh trái Richard Pulisic đột phá cơ hội để dứt điểm V [la hét] 1-0 dành cho đội tuyển Mỹ."
+    },
+    {
+      "start": 29.199,
+      "end": 34.119,
+      "speaker": "SPEAKER_00",
+      "text": "Một sự khởi đầu như mơ như Hollywood dành cho đội chủ nhà của kỳ World Cup năm nay."
+    },
+    {
+      "start": 34.119,
+      "end": 44.405,
+      "speaker": "SPEAKER_00",
+      "text": "Pha giản sẽ tấn công rất tốt của các cầu thủ Mỹ Weston MYC [hò reo] những người thi đấu tại seria A trong áo của Juventus và AC Milan."
+    },
+    {
+      "start": 44.405,
+      "end": 48.47,
+      "speaker": "SPEAKER_00",
+      "text": "Và cuối cùng chúng ta sẽ xem điều gì xảy ra với khung thành của Paragay."
+    },
+    {
+      "start": 48.47,
+      "end": 52.12,
+      "speaker": "SPEAKER_00",
+      "text": "Và đó là một tình huống đưa bóng về lưới nhà."
+    }
+  ],
+  "transcript_language": "Tiếng VI-ORIG",
+  "transcript_is_auto": true,
+  "transcript_source": "yt-dlp-json3-auto",
+  "detected_languages": [
+    "Tiếng VI-ORIG"
+  ]
+}
