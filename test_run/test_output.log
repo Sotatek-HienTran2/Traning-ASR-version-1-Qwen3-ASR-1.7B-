@@ -1,0 +1,3 @@
+[run_crawl] 🔑 Cần quyền sudo để quản lý route VPN (nhập password 1 lần):
+sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+sudo: a password is required

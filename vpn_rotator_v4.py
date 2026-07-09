@@ -44,7 +44,7 @@ log = logging.getLogger("vpn_rotator")
 
 # ================= CONFIG =================
 
-PROTON_CONFIG_DIR = Path("/home/hientran/sythetic_crawl_data/proton_config")
+PROTON_CONFIG_DIR = Path(__file__).resolve().parent / "proton_config"
 PROTON_AUTH_FILE = PROTON_CONFIG_DIR / "auth.txt"
 OPENVPN_BIN = "/usr/sbin/openvpn"
 # File log để debug khi tunnel không lên
@@ -331,6 +331,16 @@ class VPNRotator:
                                 "KHÔNG bị kill PID)",
                                 _idtag, self._request_count, self.real_ip_cycle,
                             )
+                            # v13: PRINT rõ ràng cycle về IP thật
+                            old_idx = self._current_idx
+                            old_name = self._ovpn_files[old_idx].name if (old_idx is not None and self._ovpn_files) else "?"
+                            old_country = self._extract_country(old_name) if old_name != "?" else "?"
+                            old_ip = self._current_ip or "?"
+                            print(
+                                f"  [v13-smart] 🔄 IP-FAKE → REAL: "
+                                f"drop [{old_idx}] {old_name} ({old_country}) @ {old_ip}",
+                                flush=True,
+                            )
                             self._disconnect()  # kill openvpn PID (chỉ PID của mình)
                             self._current_idx = None
                             self._current_ip = None
@@ -378,6 +388,27 @@ class VPNRotator:
                 # === CASE C: Chưa connected, cần reconnect VPN (cycle fake mới) ===
                 if not self._connect_locked():
                     return None
+
+                # v13: PRINT rõ ràng IP fake đang ACTIVE sau khi connect.
+                # Đây là lúc IP fake được "mở" để dùng → user cần thấy
+                # server nào + IP nào đang route traffic.
+                try:
+                    if self._current_idx is not None and self._ovpn_files:
+                        new_name = self._ovpn_files[self._current_idx].name
+                        new_country = self._extract_country(new_name)
+                        new_ip = self._current_ip or "(connecting...)"
+                        print(
+                            f"  [v13-smart] 🟢 IP-FAKE ACTIVE: "
+                            f"[{self._current_idx}] {new_name} ({new_country}) "
+                            f"@ {new_ip}",
+                            flush=True,
+                        )
+                        log.warning(
+                            "🟢 IP-FAKE ACTIVE: [%s] %s (%s) @ %s",
+                            self._current_idx, new_name, new_country, new_ip,
+                        )
+                except Exception as e:
+                    print(f"  [v13-smart] ⚠️ IP-FAKE ACTIVE log error: {e}", flush=True)
 
                 self._request_count = 1
                 return None  # tunnel vừa lên, return None (system route qua tunnel)
@@ -494,7 +525,7 @@ class VPNRotator:
                             _idtag, cur,
                             self._consecutive_fails[cur], self._cooldown_seconds,
                         )
-                self._rotate_locked()
+                self._rotate_locked(reason=reason)
 
     def increment_captcha_hit(self):
         with self._lock:
@@ -587,17 +618,33 @@ class VPNRotator:
             # bởi phiên trước, hoặc ai đó start openvpn ngoài rotator), dùng
             # pkill nhưng với filter CHẶT hơn để giảm nhầm.
             try:
-                # Chỉ kill process openvpn CỦA USER HIỆN TẠI, tránh kill process
-                # của user khác (vd: root-owned openvpn từ session khác)
-                result = subprocess.run(
-                    ["pkill", "-9", "-u", str(os.getuid()),
+                # SIGTERM trước để OpenVPN cleanup route/tun
+                subprocess.run(
+                    ["pkill", "-15", "-u", str(os.getuid()),
                      "-f", "openvpn.*proton_config.*\\.ovpn"],
                     capture_output=True, timeout=5,
                 )
-                if result.returncode == 0:
-                    log.info("VPN: pkill fallback kill %s process openvpn cu",
-                             result.returncode)
-                    time.sleep(ROTATE_DELAY)
+                # Chờ tối đa 5s cho OpenVPN cleanup route
+                for _ in range(10):
+                    time.sleep(0.5)
+                    r = subprocess.run(
+                        ["pgrep", "-u", str(os.getuid()),
+                         "-f", "openvpn.*proton_config"],
+                        capture_output=True, timeout=3,
+                    )
+                    if r.returncode != 0:
+                        break
+                else:
+                    # Vẫn sống sau 5s → SIGKILL + cleanup route thủ công
+                    subprocess.run(
+                        ["pkill", "-9", "-u", str(os.getuid()),
+                         "-f", "openvpn.*proton_config.*\\.ovpn"],
+                        capture_output=True, timeout=5,
+                    )
+                    time.sleep(0.5)
+                    self._cleanup_orphan_routes()
+                log.info("VPN: pkill fallback dọn process openvpn cũ")
+                time.sleep(ROTATE_DELAY)
                 return
             except Exception as e:
                 log.warning("Lỗi pkill fallback: %s", e)
@@ -634,16 +681,19 @@ class VPNRotator:
                     # Race: process chuyển owner trước khi chết
                     pass
 
-            # Bước 3: timeout mà vẫn sống → SIGKILL
+            # Bước 3: timeout mà vẫn sống → SIGKILL + cleanup route thủ công
             log.warning("VPN: PID %s không chết sau %ds, dùng SIGKILL",
                         pid, KILL_TIMEOUT)
             try:
                 os.kill(pid, 9)  # SIGKILL
-                time.sleep(0.5)  # đợi kernel thu hồi process
+                time.sleep(1)  # đợi kernel thu hồi process + route orphan
             except ProcessLookupError:
                 pass
             except PermissionError:
                 pass
+
+            # SIGKILL = OpenVPN không cleanup route → dọn thủ công
+            self._cleanup_orphan_routes()
 
             self._current_pid = None
             time.sleep(ROTATE_DELAY)
@@ -654,16 +704,52 @@ class VPNRotator:
             self._disconnect_fallback_pkill()
 
     def _disconnect_fallback_pkill(self):
-        """Fallback cuối cùng: pkill với filter chặt (chỉ user hiện tại)."""
+        """Fallback cuối cùng: pkill với filter chặt (chỉ user hiện tại).
+        Dùng SIGTERM trước, chờ 3s, nếu vẫn sống mới SIGKILL + cleanup route."""
         try:
             subprocess.run(
-                ["pkill", "-9", "-u", str(os.getuid()),
+                ["pkill", "-15", "-u", str(os.getuid()),
                  "-f", "openvpn.*proton_config.*\\.ovpn"],
                 capture_output=True, timeout=5,
             )
+            # Chờ tối đa 3s cho graceful shutdown
+            for _ in range(6):
+                time.sleep(0.5)
+                r = subprocess.run(
+                    ["pgrep", "-u", str(os.getuid()),
+                     "-f", "openvpn.*proton_config"],
+                    capture_output=True, timeout=3,
+                )
+                if r.returncode != 0:
+                    break
+            else:
+                # Vẫn sống → SIGKILL + cleanup
+                subprocess.run(
+                    ["pkill", "-9", "-u", str(os.getuid()),
+                     "-f", "openvpn.*proton_config.*\\.ovpn"],
+                    capture_output=True, timeout=5,
+                )
+                time.sleep(0.5)
+                self._cleanup_orphan_routes()
             time.sleep(ROTATE_DELAY)
         except Exception as e:
             log.warning("Lỗi pkill fallback: %s", e)
+
+    def _cleanup_orphan_routes(self):
+        """Dọn route rác sau khi OpenVPN bị SIGKILL (không tự cleanup).
+        Xóa: 0.0.0.0/1, 128.0.0.0/1 (redirect-gateway), rule priority 100."""
+        try:
+            subprocess.run(["ip", "route", "del", "0.0.0.0/1"],
+                           capture_output=True, timeout=3)
+            subprocess.run(["ip", "route", "del", "128.0.0.0/1"],
+                           capture_output=True, timeout=3)
+            subprocess.run(["ip", "rule", "del", "priority", "100"],
+                           capture_output=True, timeout=3)
+            subprocess.run(["ip", "route", "flush", "cache"],
+                           capture_output=True, timeout=3)
+            log.info("VPN: cleaned up orphan routes after SIGKILL")
+        except Exception as e:
+            log.warning("VPN: cleanup_orphan_routes error (ignored): %s", e)
 
     def _prepare_config(self, ovpn_path: Path) -> Path:
         """
@@ -868,7 +954,7 @@ class VPNRotator:
         self._disconnect()
         return False
 
-    def _rotate_locked(self):
+    def _rotate_locked(self, reason: str = "rotate"):
         """Rotate sang server khac. v4: skip blacklist/cooldown, uu tien it fail.
 
         v4 IMPROVEMENTS:
@@ -877,6 +963,10 @@ class VPNRotator:
           - Uu tien server co consecutive_fails thap nhat
           - Reset _consecutive_fails[old_idx] = 0 khi rotate di
           - Neu tat ca server deu bi skip -> reset blacklist + cooldown
+
+        Args:
+            reason: Lý do rotate (vd: "captcha", "slow_speed_mid_download_1").
+                Dùng để log + debug khi user hỏi "tại sao rotate?".
         """
         _idtag = (
             f"[{self._instance_id}]" if getattr(self, "_instance_id", None)
@@ -934,6 +1024,35 @@ class VPNRotator:
             _idtag,
             self._ovpn_files[old_idx].name if self._current_idx is not None else "(none)",
             self._ovpn_files[new_idx].name,
+        )
+
+        # v13: PRINT rõ ràng IP fake mới ra TERMINAL (không chỉ log file).
+        # Lý do: log file có thể bị rotate/lost, terminal giúp user thấy ngay
+        # server nào đang active để debug khi cần.
+        # Try/except để BẮT BUỘC in ra terminal kể cả khi access _ovpn_files lỗi.
+        try:
+            old_name = self._ovpn_files[old_idx].name if self._current_idx is not None else "(none)"
+            new_name = self._ovpn_files[new_idx].name
+            old_country = self._extract_country(old_name)
+            new_country = self._extract_country(new_name)
+        except Exception as e:
+            old_name = f"(err:{e})"
+            new_name = f"(err:{e})"
+            old_country = "??"
+            new_country = "??"
+        print(
+            f"  [v13-smart] 🔄 IP-FAKE ROTATE: "
+            f"[{old_idx}] {old_name} ({old_country}) "
+            f"→ [{new_idx}] {new_name} ({new_country}) "
+            f"[reason={reason}]",
+            flush=True,
+        )
+        # Cũng ghi vào log file (để query sau này)
+        log.warning(
+            "🔄 IP-FAKE ROTATE: [%s] %s (%s) → [%s] %s (%s) [reason=%s]",
+            old_idx, old_name, old_country,
+            new_idx, new_name, new_country,
+            reason,
         )
 
         # Retry logic: thử 2 lần với backoff 5s

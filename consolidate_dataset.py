@@ -2,7 +2,12 @@
 """
 Consolidate YouTube dataset: thống nhất tất cả output (CSV + JSON).
 
-Làm 4 việc trong 1 lần chạy:
+Làm 5 việc trong 1 lần chạy:
+  0. (--flatten) Dồn subfolder audio/<timestamp>/*.wav → audio/*.wav và
+                   transcriptions/<timestamp>/*.json → transcriptions/*.json.
+                   Tự động dedup audio trùng content hash (giữ 1 bản, xóa bản trùng)
+                   và JSON trùng video_id (giữ bản có nhiều segment nhất).
+                   Vì audio_path trong CSV/JSON chỉ là tên file relative → KHÔNG CẦN SỬA CSV.
   1. Gộp nhiều research_*.json trong mỗi channel thành 1 file research_{channel}_MERGED.json
   2. Gộp nhiều pipeline_summary_*.json thành 1 file pipeline_summary_MERGED.json
   3. Rebuild + merge tất cả CSV (segments, summary, research) thành 3 file *_MERGED.csv
@@ -24,6 +29,12 @@ Usage:
 
     # Chỉ merge JSON (skip CSV)
     python consolidate_dataset.py --base-dir youtube_dataset_1 --skip-csv
+
+    # Dồn subfolder + dedup (xem trước)
+    python consolidate_dataset.py --base-dir youtube_dataset_1 --flatten --dry-run
+
+    # Dồn subfolder + dedup + merge CSV + xóa file gốc (1 lần)
+    python consolidate_dataset.py --base-dir youtube_dataset_1 --flatten --cleanup
 """
 
 import argparse
@@ -86,6 +97,324 @@ def safe_filename_to_video_id(filename: str) -> Optional[str]:
     if m:
         return m.group(1)
     return None
+
+
+# ================= FLATTEN AUDIO + TRANSCRIPTIONS SUBFOLDERS =================
+
+def _md5(path: Path, chunk: int = 1024 * 1024) -> str:
+    """Hash nội dung file (chỉ phần đầu ~16MB để nhanh — đủ phân biệt audio khác nhau)."""
+    import hashlib
+    h = hashlib.md5()
+    total = 0
+    with open(path, "rb") as f:
+        while True:
+            b = f.read(chunk)
+            if not b:
+                break
+            h.update(b)
+            total += len(b)
+            if total >= 16 * 1024 * 1024:  # cap 16MB
+                break
+    return h.hexdigest()
+
+
+def _video_id_from_name(filename: str) -> Optional[str]:
+    """Trích video_id từ tên file JSON (ưu tiên *_transcription.json) hoặc audio."""
+    # Pattern 1: {safe_title}_<video_id>_transcription.json
+    m = re.search(r"_([A-Za-z0-9_-]{11})_transcription\.json$", filename)
+    if m:
+        return m.group(1)
+    # Pattern 2: <video_id>.wav
+    m = re.search(r"^([A-Za-z0-9_-]{11})\.(?:wav|mp3|m4a|flac|opus|ogg|webm)$", filename)
+    if m:
+        return m.group(1)
+    # Pattern 3 fallback: _<video_id>.<ext>
+    m = re.search(r"_([A-Za-z0-9_-]{11})\.(?:wav|mp3|m4a|flac|opus|ogg|webm|json)$", filename)
+    return m.group(1) if m else None
+
+
+def _scan_audio_for_dup(channel_folder: Path) -> tuple[dict[str, Path], list[Path]]:
+    """
+    Quét toàn bộ audio (kể cả root audio/ và audio/<ts>/*) → map {hash: Path_giữ_lại}.
+    Trả về (keep_map, list_path_deduped) trong đó keep_map chỉ chứa 1 Path cho mỗi hash.
+    """
+    audio_dir = channel_folder / "audio"
+    if not audio_dir.exists():
+        return {}, []
+
+    AUDIO_EXT = {".wav", ".m4a", ".mp3", ".flac", ".opus", ".ogg", ".webm"}
+    # Gom tất cả file audio (kể cả nằm ngay audio/ và trong subfolder)
+    audio_files: list[Path] = []
+    for p in audio_dir.rglob("*"):
+        if p.is_file() and p.suffix.lower() in AUDIO_EXT:
+            audio_files.append(p)
+        elif p.is_dir():
+            # bỏ qua nested folder, chỉ quan tâm file
+            pass
+
+    by_hash: dict[str, Path] = {}
+    for f in audio_files:
+        try:
+            h = _md5(f)
+        except Exception:
+            continue
+        if h not in by_hash:
+            by_hash[h] = f
+    return by_hash, audio_files
+
+
+def _scan_transcriptions_for_dup(channel_folder: Path) -> tuple[dict[str, Path], list[Path]]:
+    """
+    Quét transcriptions/**/*_transcription.json → map {video_id: Path_giữ_lại}.
+    Giữ video_id trùng: chọn file có segment nhiều nhất (mặc định file mới nhất theo tên).
+    """
+    trans_dir = channel_folder / "transcriptions"
+    if not trans_dir.exists():
+        return {}, []
+
+    json_files: list[Path] = []
+    for p in trans_dir.rglob("*_transcription.json"):
+        if p.is_file():
+            json_files.append(p)
+
+    by_vid: dict[str, Path] = {}
+    for f in json_files:
+        try:
+            with open(f, "r", encoding="utf-8") as fh:
+                data = json.load(fh)
+        except Exception:
+            continue
+        vid = data.get("video_id") or _video_id_from_name(f.name) or ""
+        if not vid:
+            continue
+        # Ưu tiên giữ file có segments nhiều nhất; nếu bằng nhau thì giữ alphabetically đầu
+        seg_count = len(data.get("segments") or [])
+        if vid not in by_vid:
+            by_vid[vid] = f
+        else:
+            try:
+                with open(by_vid[vid], "r", encoding="utf-8") as fh:
+                    existing_data = json.load(fh)
+                existing_count = len(existing_data.get("segments") or [])
+            except Exception:
+                existing_count = -1
+            if seg_count > existing_count:
+                by_vid[vid] = f
+    return by_vid, json_files
+
+
+def flatten_subfolders(channel_folder: Path, dry_run: bool = False) -> dict:
+    """
+    Dồn audio/<timestamp>/*.wav → audio/*.wav và transcriptions/<timestamp>/*.json → transcriptions/*.json.
+
+    Bước xử lý:
+      1. Quét toàn bộ audio/*.wav (kể cả trong subfolder) → nhóm theo content hash (md5).
+         - Nếu nhiều file có CÙNG hash: giữ 1 bản (ưu tiên file ở root nếu có, nếu không thì
+           lấy file đầu tiên theo alphabet), xóa các bản còn lại.
+      2. Với file audio unique còn lại (khác hash nhau): move về audio/ (root).
+      3. Quét transcriptions/*_transcription.json → nhóm theo video_id.
+         - Nếu cùng video_id có nhiều bản JSON: giữ bản có nhiều segment nhất, xóa các bản khác.
+         - Nếu audio tương ứng (cùng video_id) đã bị xóa ở bước 1 → xóa luôn JSON.
+      4. Move JSON còn lại về transcriptions/ (root), đổi tên nếu trùng tên file.
+      5. Xóa các subfolder <timestamp>/ rỗng.
+
+    LƯU Ý về CSV/JSON ở root (research_*, pipeline_summary_*, *_MERGED.csv):
+      - audio_path trong các file này CHỈ LÀ TÊN FILE (relative), không chứa subfolder path
+        (đã xác nhận qua kiểm tra: 0 absolute path trong tất cả CSV).
+      - Sau khi dồn, file audio vẫn nằm trong audio/ nhưng tên giống y cũ → KHÔNG CẦN SỬA CSV.
+      - Các cột _source_file, _source_timestamp, audio_timestamps SẼ MẤT THÔNG TIN về subfolder
+        cũ, nhưng giá trị đó là metadata tham chiếu, không ảnh hưởng logic.
+
+    Args:
+        channel_folder: folder kênh (vd: youtube_dataset_1/CogaiIT2k2)
+        dry_run: nếu True chỉ in kế hoạch, không move/xóa
+
+    Returns:
+        dict thống kê: {audio_kept, audio_removed_dup, audio_moved,
+                        trans_kept, trans_removed_dup, trans_removed_orphan,
+                        trans_renamed, subfolders_removed}
+    """
+    stats = {
+        "audio_kept": 0,
+        "audio_removed_dup": 0,
+        "audio_moved": 0,
+        "trans_kept": 0,
+        "trans_removed_dup": 0,
+        "trans_removed_orphan": 0,
+        "trans_renamed": 0,
+        "subfolders_removed": 0,
+    }
+
+    if not channel_folder.is_dir():
+        return stats
+
+    audio_dir = channel_folder / "audio"
+    trans_dir = channel_folder / "transcriptions"
+
+    # ========== BƯỚC 1+2: AUDIO ==========
+    audio_keep_by_hash, all_audio_files = _scan_audio_for_dup(channel_folder)
+    kept_audio_set = set(audio_keep_by_hash.values())
+
+    audio_to_remove: list[Path] = []  # trùng hash, xóa
+    audio_to_move: list[Path] = []    # unique nhưng nằm trong subfolder, move về root
+
+    for f in all_audio_files:
+        if f in kept_audio_set:
+            # file được giữ lại
+            if f.parent != audio_dir:
+                audio_to_move.append(f)
+        else:
+            audio_to_remove.append(f)
+
+    # ========== BƯỚC 3: TRANSCRIPTIONS ==========
+    trans_keep_by_vid, all_trans_files = _scan_transcriptions_for_dup(channel_folder)
+    kept_trans_set = set(trans_keep_by_vid.values())
+
+    trans_to_remove: list[Path] = []
+    trans_to_move: list[Path] = []
+    trans_rename: list[tuple[Path, Path]] = []  # (src, dst) khi tên trùng ở root
+
+    # Map audio_path trong JSON → video_id đã được giữ
+    # (orphan = audio đã xóa ở bước 1 → JSON này cũng phải xóa)
+    audio_kept_names = {p.name for p in kept_audio_set}
+
+    for f in all_trans_files:
+        if f in kept_trans_set:
+            if f.parent != trans_dir:
+                trans_to_move.append(f)
+        else:
+            trans_to_remove.append(f)
+
+    # Kiểm tra JSON có audio tương ứng không (orphan removal)
+    for f in kept_trans_set:
+        try:
+            with open(f, "r", encoding="utf-8") as fh:
+                data = json.load(fh)
+        except Exception:
+            continue
+        ap = data.get("audio_path", "")
+        if ap and ap not in audio_kept_names:
+            # Audio tương ứng đã bị xóa vì trùng hash với audio khác → JSON cũng xóa
+            trans_to_remove.append(f)
+            # Loại khỏi kept để không move file này
+            if f in trans_to_move:
+                trans_to_move.remove(f)
+            stats["trans_removed_orphan"] += 1
+
+    # ========== XỬ LÝ ĐỔI TÊN KHI TRÙNG Ở ROOT ==========
+    # Sau khi move nhiều file về cùng root, có thể trùng tên. Đổi tên theo pattern _2, _3...
+    trans_dst_names = {p.name for p in trans_dir.iterdir() if p.is_file()} if trans_dir.exists() else set()
+    audio_dst_names = {p.name for p in audio_dir.iterdir() if p.is_file()} if audio_dir.exists() else set()
+
+    def _unique_name(base: Path, existing: set[str]) -> Path:
+        stem, suf = base.stem, base.suffix
+        new_name = base.name
+        i = 2
+        while new_name in existing:
+            new_name = f"{stem}_{i}{suf}"
+            i += 1
+        existing.add(new_name)
+        return base.with_name(new_name)
+
+    for src in list(audio_to_move):
+        dst = audio_dir / src.name
+        if dst.exists():
+            # Trùng tên ở root: giữ nguyên file root (đã tồn tại), xóa file định move
+            audio_to_remove.append(src)
+            audio_to_move.remove(src)
+            continue
+        final_dst = _unique_name(dst, audio_dst_names)
+        if final_dst.name != src.name:
+            stats["trans_renamed"] += 1  # count together
+        audio_dst_names.add(final_dst.name)
+
+    for src in list(trans_to_move):
+        dst = trans_dir / src.name
+        if dst.exists():
+            trans_to_remove.append(src)
+            trans_to_move.remove(src)
+            continue
+        final_dst = _unique_name(dst, trans_dst_names)
+        if final_dst.name != src.name:
+            stats["trans_renamed"] += 1
+        trans_dst_names.add(final_dst.name)
+
+    # ========== IN KẾ HOẠCH ==========
+    print(f"  [flatten] audio: keep={len(kept_audio_set)}, "
+          f"remove_dup={len(audio_to_remove) - sum(1 for f in audio_to_remove if f in kept_audio_set)}, "
+          f"move_to_root={len(audio_to_move)}")
+    print(f"  [flatten] trans: keep={len(kept_trans_set) - stats['trans_removed_orphan']}, "
+          f"remove_dup={len(trans_to_remove) - stats['trans_removed_orphan']}, "
+          f"orphan_removed={stats['trans_removed_orphan']}, "
+          f"move_to_root={len(trans_to_move)}, renamed={stats['trans_renamed']}")
+
+    if dry_run:
+        return stats
+
+    # ========== THỰC THI ==========
+    # Xóa audio trùng hash (trừ file được giữ)
+    for f in audio_to_remove:
+        if f in kept_audio_set:
+            continue
+        try:
+            f.unlink()
+            stats["audio_removed_dup"] += 1
+        except Exception as e:
+            print(f"    [WARN] không xóa được {f}: {e}")
+
+    # Move audio về root
+    for src in audio_to_move:
+        dst = audio_dir / src.name
+        if dst.exists():
+            # đã được xử lý ở trên
+            continue
+        try:
+            src.rename(dst)
+            stats["audio_moved"] += 1
+        except Exception as e:
+            print(f"    [WARN] không move được {src} → {dst}: {e}")
+
+    # Xóa trans trùng video_id
+    for f in trans_to_remove:
+        try:
+            f.unlink()
+            if f not in kept_trans_set:
+                stats["trans_removed_dup"] += 1
+        except Exception as e:
+            print(f"    [WARN] không xóa được {f}: {e}")
+
+    # Move trans về root (đã tính unique name ở trên)
+    moved_pairs: list[tuple[Path, Path]] = []
+    for src in trans_to_move:
+        dst = trans_dir / src.name
+        if dst.exists():
+            continue
+        moved_pairs.append((src, dst))
+    for src, dst in moved_pairs:
+        try:
+            src.rename(dst)
+            stats["trans_kept"] += 1
+        except Exception as e:
+            print(f"    [WARN] không move được {src} → {dst}: {e}")
+
+    # Xóa subfolder <timestamp>/ rỗng
+    for parent in (audio_dir, trans_dir):
+        if not parent.exists():
+            continue
+        for sub in parent.iterdir():
+            if not sub.is_dir():
+                continue
+            try:
+                # Thử xóa (chỉ xóa được nếu rỗng)
+                sub.rmdir()
+                stats["subfolders_removed"] += 1
+            except OSError:
+                # Còn file → best effort: thử xóa file cũ không cần thiết (giữ lại file gần đây nhất)
+                pass
+
+    stats["audio_kept"] = len(kept_audio_set)
+    stats["trans_kept"] = len(trans_to_move)
+    return stats
 
 
 # ================= SCAN AUDIO + TRANSCRIPTIONS =================
@@ -732,7 +1061,8 @@ def merge_pipeline_summaries(channel_folder: Path) -> dict:
 
 # ================= PROCESS CHANNEL =================
 
-def process_channel(channel_folder: Path, skip_csv: bool = False, cleanup: bool = False) -> dict:
+def process_channel(channel_folder: Path, skip_csv: bool = False, cleanup: bool = False,
+                   flatten: bool = False, dry_run: bool = False) -> dict:
     """Xử lý 1 channel: merge JSON + rebuild CSV."""
     if not channel_folder.is_dir():
         return {}
@@ -742,6 +1072,10 @@ def process_channel(channel_folder: Path, skip_csv: bool = False, cleanup: bool 
     print(f"{'='*70}")
 
     results = {}
+
+    # 0. Dồn subfolder audio/<ts>/ và transcriptions/<ts>/ thành 1 folder phẳng
+    if flatten:
+        results["flatten"] = flatten_subfolders(channel_folder, dry_run=dry_run)
 
     # 1. Merge research JSON
     results["research_json"] = merge_research_jsons(channel_folder)
@@ -794,6 +1128,11 @@ def main():
     parser.add_argument("--base-dir", help="Xử lý toàn bộ dataset")
     parser.add_argument("--skip-csv", action="store_true", help="Chỉ merge JSON, skip rebuild CSV")
     parser.add_argument("--cleanup", action="store_true", help="Xóa file gốc sau khi merge")
+    parser.add_argument("--flatten", action="store_true",
+                        help="Dồn audio/<ts>/*.wav → audio/*.wav và transcriptions/<ts>/*.json → transcriptions/*.json, "
+                             "tự động dedup audio trùng content hash và JSON trùng video_id")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Chỉ in kế hoạch (kết hợp --flatten để xem trước khi xóa)")
     args = parser.parse_args()
 
     if not args.channel_folder and not args.base_dir:
@@ -807,7 +1146,7 @@ def main():
         if not cf.exists():
             print(f"[ERROR] Folder không tồn tại: {cf}")
             return 1
-        stats = process_channel(cf, args.skip_csv, args.cleanup)
+        stats = process_channel(cf, args.skip_csv, args.cleanup, args.flatten, args.dry_run)
         if stats:
             all_stats.append(stats)
     else:
@@ -819,7 +1158,7 @@ def main():
             if not cf.is_dir() or cf.name == "logs":
                 continue
             try:
-                stats = process_channel(cf, args.skip_csv, args.cleanup)
+                stats = process_channel(cf, args.skip_csv, args.cleanup, args.flatten, args.dry_run)
                 if stats:
                     all_stats.append(stats)
             except Exception as e:
@@ -839,6 +1178,7 @@ def main():
     total_summary = sum(s.get("summary_csv", {}).get("num_rows_after", 0) for s in all_stats)
     total_research = sum(s.get("research_csv", {}).get("num_rows_after", 0) for s in all_stats)
     total_deleted = sum(len(s.get("deleted_files", [])) for s in all_stats)
+    flatten_stats = [s.get("flatten", {}) for s in all_stats if s.get("flatten")]
 
     print(f"  Channels: {len(all_stats)}")
     print(f"  Research JSON: {total_research_json_in} → 1 file/ch, {total_research_json_out} unique videos")
@@ -849,6 +1189,21 @@ def main():
         print(f"  Research CSV: {total_research:,} rows")
     if args.cleanup:
         print(f"  File đã xóa: {total_deleted}")
+    if flatten_stats:
+        f_audio_kept = sum(f.get("audio_kept", 0) for f in flatten_stats)
+        f_audio_removed = sum(f.get("audio_removed_dup", 0) for f in flatten_stats)
+        f_audio_moved = sum(f.get("audio_moved", 0) for f in flatten_stats)
+        f_trans_kept = sum(f.get("trans_kept", 0) for f in flatten_stats)
+        f_trans_removed_dup = sum(f.get("trans_removed_dup", 0) for f in flatten_stats)
+        f_trans_removed_orphan = sum(f.get("trans_removed_orphan", 0) for f in flatten_stats)
+        f_renamed = sum(f.get("trans_renamed", 0) for f in flatten_stats)
+        f_subfolders = sum(f.get("subfolders_removed", 0) for f in flatten_stats)
+        print(f"  --- Flatten subfolders ---")
+        print(f"  Audio kept: {f_audio_kept} | removed (dup): {f_audio_removed} | moved to root: {f_audio_moved}")
+        print(f"  Trans kept: {f_trans_kept} | removed (dup): {f_trans_removed_dup} | orphan removed: {f_trans_removed_orphan} | renamed: {f_renamed}")
+        print(f"  Subfolders removed: {f_subfolders}")
+        if args.dry_run:
+            print(f"  [DRY-RUN] không có file nào bị thay đổi")
 
     return 0
 

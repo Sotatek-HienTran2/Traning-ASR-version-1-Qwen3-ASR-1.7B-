@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PY=/home/hientran/miniconda3/envs/crawl/bin/python3
-CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_khoa_hoc_6.txt
+CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_khoa_hoc_2.txt
 MAX_RESULTS=5000
 MAX_FETCH=3000
 VIDEO_DELAY=8
@@ -172,7 +172,7 @@ echo "[run_crawl] starting crawler..."
 cd "$SCRIPT_DIR"
 
 exec "$PY" \
-  "$SCRIPT_DIR/youtube_researcher_audio_subs_multi_rotator_v10.py" \
+  "$SCRIPT_DIR/youtube_researcher_audio_subs_multi_rotator_v12.py" \
   --channels-file "$CHANNELS_FILE" \
   --max-results "$MAX_RESULTS" \
   --max-fetch "$MAX_FETCH" \
