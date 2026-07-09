@@ -51,7 +51,7 @@ PY="${PY:-/home/hientran/miniconda3/envs/crawl/bin/python3}"
 # Channels file: máy này KHÔNG có /home/sotatek/.../channels_marketing.txt.
 # Dùng file có sẵn trong /home/hientran/sythetic_crawl_data/channels_audio/.
 # Có thể override bằng env var CHANNELS_FILE.
-CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_AI_6_ok.txt
+CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_tong_hop_1.txt
 MAX_RESULTS=1000
 MAX_FETCH=500
 VIDEO_DELAY=5

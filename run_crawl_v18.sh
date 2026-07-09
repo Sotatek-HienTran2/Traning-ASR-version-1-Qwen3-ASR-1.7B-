@@ -152,7 +152,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Có thể override bằng env var PY, ví dụ: PY=python3 ./run_crawl_v18.sh
 PY="${PY:-/home/hientran/miniconda3/envs/crawl/bin/python3}"
 # Channels file: có thể override bằng env var CHANNELS_FILE.
-CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_review_2.txt
+CHANNELS_FILE=/home/hientran/sythetic_crawl_data/channels_audio/channels_thoi_su_1.txt
 MAX_RESULTS=10000
 MAX_FETCH=10000
 VIDEO_DELAY=0
